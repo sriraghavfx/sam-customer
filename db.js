@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
@@ -13,31 +13,41 @@ const defaultData = {
 };
 
 function initDb() {
-  if (!fs.existsSync(path.dirname(DB_FILE))) {
-    fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
-  }
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2), 'utf-8');
+  try {
+    if (!fs.existsSync(path.dirname(DB_FILE))) {
+      fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
+    }
+    if (!fs.existsSync(DB_FILE)) {
+      fs.writeFileSync(DB_FILE, JSON.stringify(defaultData, null, 2), 'utf-8');
+    }
+  } catch (err) {
+    console.log('Skipping db init write (read-only filesystem likely)');
   }
 }
 
+let memoryDb = null;
+
 function readDb() {
+  if (memoryDb) return memoryDb;
   initDb();
   try {
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
-    return JSON.parse(raw);
+    memoryDb = JSON.parse(raw);
+    return memoryDb;
   } catch (err) {
     console.error('Error reading database:', err);
-    return defaultData;
+    memoryDb = defaultData;
+    return memoryDb;
   }
 }
 
 function writeDb(data) {
+  memoryDb = data; // Keep in memory for Vercel Serverless
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
     return true;
   } catch (err) {
-    console.error('Error writing database:', err);
+    console.error('Skipping file write (Vercel read-only filesystem)');
     return false;
   }
 }
