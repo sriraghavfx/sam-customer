@@ -1,523 +1,233 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopPulse AI - Retail Customer Analyzer & AI SMS Recommendation</title>
+  <title>ShopPulse AI – Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' }
+            brand: { 50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' }
           }
         }
       }
     }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .phone-mockup { width: 310px; height: 490px; border: 10px solid #1e293b; border-radius: 36px; box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3); }
+    body { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4f46e5 100%); }
+    .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.15); }
+    .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-  <!-- AUTH SCREEN -->
-  <div id="authScreen" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative overflow-hidden">
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-600 text-white text-2xl mb-4 shadow-lg shadow-brand-500/30">
-          <i class="fa-solid fa-store"></i>
-        </div>
-        <h1 class="text-2xl font-bold text-slate-900">ShopPulse AI</h1>
-        <p class="text-sm text-slate-500 mt-1">Shop Owner Retail Analytics & AI SMS Marketing</p>
+  <!-- Decorative blobs -->
+  <div class="fixed top-[-80px] left-[-80px] w-72 h-72 bg-indigo-400 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+  <div class="fixed bottom-[-80px] right-[-80px] w-96 h-96 bg-purple-500 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+
+  <div class="w-full max-w-4xl z-10">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/20 glass text-white text-3xl mb-5 shadow-xl">
+        <i class="fa-solid fa-store"></i>
       </div>
+      <h1 class="text-4xl font-extrabold text-white tracking-tight">ShopPulse <span class="text-indigo-300">AI</span></h1>
+      <p class="text-indigo-200 mt-2 text-base">AI-Powered Retail Analytics & Smart E-Commerce</p>
+    </div>
 
-      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Email Address</label>
-          <input type="email" id="loginEmail" value="owner@shop.com" required
-            class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1">Password</label>
-          <input type="password" id="loginPassword" value="admin123" required
-            class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-brand-500 outline-none text-sm">
-        </div>
+    <!-- Error message -->
+    <div id="errorMsg" class="hidden max-w-md mx-auto mb-4 px-4 py-3 rounded-xl bg-red-500/20 border border-red-400/40 text-red-200 text-sm text-center"></div>
 
-        <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg transition shadow-md flex items-center justify-center gap-2">
-          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard
+    <!-- Role Cards -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+      <!-- Admin Card -->
+      <div class="glass rounded-3xl p-8 card-hover cursor-pointer" onclick="showLoginForm('admin')">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-2xl bg-indigo-500/30 flex items-center justify-center text-indigo-200 text-2xl">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-white">Shop Owner</h2>
+            <p class="text-indigo-200 text-sm">Admin Dashboard</p>
+          </div>
+        </div>
+        <ul class="space-y-2 text-indigo-100 text-sm mb-6">
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Customer Analytics & RFM</li>
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>AI Product Recommendations</li>
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>SMS Marketing Campaigns</li>
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Product & Inventory Management</li>
+        </ul>
+        <button class="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i> Login as Admin
         </button>
-
-        <div class="relative flex py-2 items-center">
-          <div class="flex-grow border-t border-slate-200"></div>
-          <span class="flex-shrink mx-4 text-xs text-slate-400 font-medium uppercase">Quick Access</span>
-          <div class="flex-grow border-t border-slate-200"></div>
-        </div>
-
-        <button type="button" onclick="quickLogin()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-lg text-sm transition flex items-center justify-center gap-2">
-          <i class="fa-solid fa-bolt text-amber-500"></i> 1-Click Demo Shop Owner Login
-        </button>
-      </form>
-    </div>
-  </div>
-  <!-- MAIN APP -->
-  <div id="mainApp" class="flex-1 flex flex-col hidden">
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/20">
-            <i class="fa-solid fa-brain"></i>
-          </div>
-          <div>
-            <span class="font-bold text-lg text-slate-900 tracking-tight">ShopPulse <span class="text-brand-600">AI</span></span>
-            <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-xs bg-indigo-50 text-indigo-700 rounded-full font-medium border border-indigo-100">Shop Owner Portal</span>
-          </div>
-        </div>
-
-        <nav class="hidden md:flex items-center gap-1">
-          <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition text-brand-600 bg-brand-50">
-            <i class="fa-solid fa-chart-pie mr-1.5"></i> Dashboard
-          </button>
-          <button onclick="switchTab('products')" id="nav-products" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition text-slate-600 hover:bg-slate-100">
-            <i class="fa-solid fa-box-open mr-1.5"></i> Store & Products
-          </button>
-          <button onclick="switchTab('customers')" id="nav-customers" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition text-slate-600 hover:bg-slate-100">
-            <i class="fa-solid fa-users mr-1.5"></i> Customer Analytics
-          </button>
-          <button onclick="switchTab('campaigns')" id="nav-campaigns" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition text-slate-600 hover:bg-slate-100">
-            <i class="fa-solid fa-comments mr-1.5"></i> AI SMS Campaigns
-          </button>
-          <button onclick="switchTab('strategies')" id="nav-strategies" class="tab-btn px-3 py-2 rounded-lg text-sm font-medium transition text-slate-600 hover:bg-slate-100">
-            <i class="fa-solid fa-lightbulb mr-1.5"></i> Strategic Forecasts
-          </button>
-        </nav>
-
-        <div class="flex items-center gap-3">
-          <div class="text-right hidden sm:block">
-            <p id="currentUserDisplay" class="text-sm font-semibold text-slate-800">Raghav (Owner)</p>
-            <p class="text-xs text-emerald-600 font-medium flex items-center justify-end gap-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span> Store Online
-            </p>
-          </div>
-          <button onclick="handleLogout()" class="p-2 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition" title="Logout">
-            <i class="fa-solid fa-arrow-right-from-bracket text-lg"></i>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <div class="md:hidden bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-around text-xs font-medium text-slate-600 overflow-x-auto">
-      <button onclick="switchTab('dashboard')" class="p-2 flex flex-col items-center gap-1 text-brand-600"><i class="fa-solid fa-chart-pie"></i> Dashboard</button>
-      <button onclick="switchTab('products')" class="p-2 flex flex-col items-center gap-1"><i class="fa-solid fa-box-open"></i> Store</button>
-      <button onclick="switchTab('customers')" class="p-2 flex flex-col items-center gap-1"><i class="fa-solid fa-users"></i> Customers</button>
-      <button onclick="switchTab('campaigns')" class="p-2 flex flex-col items-center gap-1"><i class="fa-solid fa-comments"></i> SMS</button>
-      <button onclick="switchTab('strategies')" class="p-2 flex flex-col items-center gap-1"><i class="fa-solid fa-lightbulb"></i> Forecast</button>
-    </div>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-
-      <!-- DASHBOARD TAB -->
-      <section id="tab-dashboard" class="tab-content space-y-6">
-        <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-indigo-800 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div class="space-y-2">
-            <h2 class="text-2xl font-bold">Welcome back, Store Owner! 🚀</h2>
-            <p class="text-indigo-100 text-sm max-w-xl">
-              AI Recommendation Engine has analyzed recent customer orders. 
-              <span id="atRiskBannerCount" class="font-bold text-amber-300">1 customer</span> is at risk of churning. Send an automated SMS win-back campaign.
-            </p>
-          </div>
-          <div class="flex gap-3 flex-wrap">
-            <button onclick="switchTab('campaigns')" class="px-4 py-2.5 bg-white text-brand-700 hover:bg-indigo-50 font-semibold rounded-xl text-sm shadow-md transition flex items-center gap-2">
-              <i class="fa-solid fa-paper-plane text-brand-600"></i> Launch AI SMS
-            </button>
-            <button onclick="openAddProductModal()" class="px-4 py-2.5 bg-brand-900/40 hover:bg-brand-900/60 border border-white/20 text-white font-medium rounded-xl text-sm transition flex items-center gap-2">
-              <i class="fa-solid fa-plus"></i> Add Product
-            </button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Total Store Revenue</p>
-              <h3 id="kpiRevenue" class="text-2xl font-bold text-slate-900 mt-1">₹0</h3>
-              <p class="text-xs text-emerald-600 font-medium mt-1"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+18.4% this month</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-indian-rupee-sign"></i>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Completed Orders</p>
-              <h3 id="kpiOrders" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
-              <p class="text-xs text-slate-500 font-medium mt-1">Avg Order: <span id="kpiAOV" class="font-semibold text-slate-700">₹0</span></p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-bag-shopping"></i>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase text-slate-500 tracking-wider">Active Customers</p>
-              <h3 id="kpiCustomers" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
-              <p class="text-xs text-indigo-600 font-medium mt-1"><i class="fa-solid fa-rotate mr-1"></i><span id="kpiRepeatRate">0%</span> Repeat Rate</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-users"></i>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm flex items-center justify-between">
-            <div>
-              <p class="text-xs font-semibold uppercase text-slate-500 tracking-wider">At-Risk Customers</p>
-              <h3 id="kpiAtRisk" class="text-2xl font-bold text-rose-600 mt-1">0</h3>
-              <p class="text-xs text-rose-500 font-medium mt-1">Inactive > 45 days</p>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h4 class="font-bold text-slate-900">Monthly Revenue & Sales Velocity</h4>
-                <p class="text-xs text-slate-500">Historical store performance</p>
-              </div>
-              <span class="px-2.5 py-1 text-xs bg-emerald-50 text-emerald-700 font-semibold rounded-lg border border-emerald-100">Growth +24%</span>
-            </div>
-            <div class="h-64"><canvas id="monthlySalesChart"></canvas></div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h4 class="font-bold text-slate-900">Sales by Category</h4>
-                <p class="text-xs text-slate-500">Product distribution</p>
-              </div>
-            </div>
-            <div class="h-64 flex items-center justify-center"><canvas id="categoryChart"></canvas></div>
-          </div>
-        </div>
-      </section>
-      <!-- PRODUCTS TAB -->
-      <section id="tab-products" class="tab-content space-y-6 hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-bold text-slate-900">Storefront & Inventory Management</h2>
-            <p class="text-sm text-slate-500">Manage ecommerce catalog, upload product images, and set promotional discounts.</p>
-          </div>
-          <button onclick="openAddProductModal()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl text-sm transition shadow-md flex items-center gap-2">
-            <i class="fa-solid fa-circle-plus"></i> Add New Product
-          </button>
-        </div>
-        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-      </section>
-
-      <!-- CUSTOMERS TAB -->
-      <section id="tab-customers" class="tab-content space-y-6 hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-bold text-slate-900">Customer Buying Intelligence (RFM)</h2>
-            <p class="text-sm text-slate-500">Analyze purchase frequency, lifetime monetary value, and recency.</p>
-          </div>
-          <div class="flex gap-2">
-            <input type="text" id="customerSearchInput" placeholder="Search customer name or phone..." oninput="filterCustomers()"
-              class="px-4 py-2 rounded-xl border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-brand-500">
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-semibold border-b border-slate-200">
-                <tr>
-                  <th class="px-5 py-3.5">Customer</th>
-                  <th class="px-5 py-3.5">Phone</th>
-                  <th class="px-5 py-3.5">Segment</th>
-                  <th class="px-5 py-3.5">Orders</th>
-                  <th class="px-5 py-3.5">Total Spent</th>
-                  <th class="px-5 py-3.5">Recency</th>
-                  <th class="px-5 py-3.5">Top Category</th>
-                  <th class="px-5 py-3.5 text-right">AI Recommendation</th>
-                </tr>
-              </thead>
-              <tbody id="customersTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- SMS CAMPAIGNS TAB -->
-      <section id="tab-campaigns" class="tab-content space-y-6 hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-xl font-bold text-slate-900">AI SMS Recommendation Hub</h2>
-            <p class="text-sm text-slate-500">Review, trigger, and track personalized SMS marketing messages sent to customers.</p>
-          </div>
-          <button onclick="triggerBulkCampaign('At-Risk')" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium rounded-xl text-sm transition shadow-md flex items-center gap-2">
-            <i class="fa-solid fa-bullhorn"></i> Auto-Dispatch Win-Back to At-Risk Segment
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-4">
-            <h4 class="font-bold text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-clock-rotate-left text-brand-600"></i> Real-time SMS Dispatch Ledger
-            </h4>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-semibold border-b border-slate-200">
-                  <tr>
-                    <th class="px-4 py-3">Recipient</th>
-                    <th class="px-4 py-3">Product</th>
-                    <th class="px-4 py-3">Message Preview</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3">Sent At</th>
-                  </tr>
-                </thead>
-                <tbody id="campaignsTableBody" class="divide-y divide-slate-100"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center space-y-4">
-            <h4 class="font-bold text-slate-900">Live Customer Phone Simulation</h4>
-            <p class="text-xs text-slate-500">Real-time preview of AI recommendations on customer phones.</p>
-            
-            <div class="phone-mockup bg-slate-900 p-4 flex flex-col justify-between text-left text-white">
-              <div class="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-2">
-                <span>9:41 AM</span>
-                <span class="font-bold tracking-widest">SHOP-SMS</span>
-                <div class="flex gap-1 items-center">
-                  <i class="fa-solid fa-wifi"></i>
-                  <i class="fa-solid fa-battery-full"></i>
-                </div>
-              </div>
-
-              <div class="my-auto space-y-3">
-                <div class="text-center text-[10px] text-slate-500">Today • SMS Marketing</div>
-                <div class="bg-brand-600 p-3.5 rounded-2xl rounded-tl-sm text-xs text-white shadow-lg space-y-1.5">
-                  <p id="livePhoneMessage" class="leading-relaxed">
-                    Hi Rahul! Based on your recent purchases, we recommend the 3-in-1 Fast Wireless Charging Dock! Get 15% OFF with code VIPEXCLUSIVE: https://myshop.link/p/5
-                  </p>
-                  <div class="text-[9px] text-indigo-200 text-right">Delivered <i class="fa-solid fa-check-double"></i></div>
-                </div>
-              </div>
-
-              <div class="text-center text-[10px] text-slate-500 border-t border-slate-800 pt-2">
-                <span id="livePhoneCharCount">142</span> / 160 Characters (1 SMS)
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- STRATEGIES TAB -->
-      <section id="tab-strategies" class="tab-content space-y-6 hidden">
-        <div>
-          <h2 class="text-xl font-bold text-slate-900">Strategic Business Intelligence & Sales Forecasts</h2>
-          <p class="text-sm text-slate-500">Predictive insights generated from sales velocity and customer churn signals.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm border-l-4 border-l-rose-500 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 bg-rose-100 text-rose-800 text-xs font-bold rounded-full uppercase">Churn Risk</span>
-              <i class="fa-solid fa-user-slash text-rose-500 text-lg"></i>
-            </div>
-            <h3 class="font-bold text-slate-900">At-Risk Customer Re-engagement</h3>
-            <p class="text-sm text-slate-600">Customers inactive for 45+ days. Without intervention, 65% will permanently lapse.</p>
-            <div class="pt-2">
-              <button onclick="triggerBulkCampaign('At-Risk')" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-lg border border-rose-200 transition">
-                Send 20% Win-back SMS &rarr;
-              </button>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm border-l-4 border-l-purple-500 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 bg-purple-100 text-purple-800 text-xs font-bold rounded-full uppercase">VIP Loyalty</span>
-              <i class="fa-solid fa-crown text-purple-500 text-lg"></i>
-            </div>
-            <h3 class="font-bold text-slate-900">High-Ticket VIP Upsell</h3>
-            <p class="text-sm text-slate-600">Top 20% high-monetary customers account for over 55% of store revenue. Offer priority product previews.</p>
-            <div class="pt-2">
-              <button onclick="triggerBulkCampaign('VIP Champion')" class="w-full py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-bold rounded-lg border border-purple-200 transition">
-                Send VIP Exclusive Preview &rarr;
-              </button>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm border-l-4 border-l-blue-500 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full uppercase">Cross-Sell</span>
-              <i class="fa-solid fa-cubes-stacked text-blue-500 text-lg"></i>
-            </div>
-            <h3 class="font-bold text-slate-900">Electronics Accessory Bundling</h3>
-            <p class="text-sm text-slate-600">Audio and smartwatch buyers have an 82% higher propensity to purchase wireless charging accessories.</p>
-            <div class="pt-2">
-              <button onclick="switchTab('customers')" class="w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold rounded-lg border border-blue-200 transition">
-                Target Audio Buyers &rarr;
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="font-bold text-slate-900">Predictive Sales & Revenue Forecast (Next Quarter)</h3>
-              <p class="text-xs text-slate-500">Projected with historical transaction linear regression and seasonal demand factors.</p>
-            </div>
-            <span class="px-3 py-1 bg-amber-50 text-amber-800 text-xs font-semibold rounded-lg border border-amber-200">
-              Confidence Level: 92%
-            </span>
-          </div>
-          <div class="h-72"><canvas id="forecastChart"></canvas></div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- ADD PRODUCT MODAL -->
-  <div id="addProductModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-5">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h3 class="font-bold text-lg text-slate-900">Add New Ecommerce Product</h3>
-        <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
       </div>
 
-      <form id="addProductForm" onsubmit="handleAddProduct(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Product Title</label>
-          <input type="text" id="prodName" required placeholder="e.g. Wireless Ergonomic Mouse"
-            class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-brand-500">
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Category</label>
-            <select id="prodCategory" class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-brand-500">
-              <option value="Electronics">Electronics</option>
-              <option value="Fashion">Fashion</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Home & Kitchen">Home & Kitchen</option>
-              <option value="Fitness">Fitness</option>
-            </select>
+      <!-- Customer Card -->
+      <div class="glass rounded-3xl p-8 card-hover cursor-pointer" onclick="showLoginForm('customer')">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="w-14 h-14 rounded-2xl bg-purple-500/30 flex items-center justify-center text-purple-200 text-2xl">
+            <i class="fa-solid fa-bag-shopping"></i>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Price (₹)</label>
-            <input type="number" id="prodPrice" required placeholder="1499"
-              class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+            <h2 class="text-xl font-bold text-white">Customer</h2>
+            <p class="text-purple-200 text-sm">Online Store</p>
           </div>
         </div>
-
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Stock Quantity</label>
-            <input type="number" id="prodStock" value="25"
-              class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-brand-500">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tags (Comma separated)</label>
-            <input type="text" id="prodTags" placeholder="Tech, Wireless, Office"
-              class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-brand-500">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Description</label>
-          <textarea id="prodDesc" rows="2" placeholder="Key highlights and specs..."
-            class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-brand-500"></textarea>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Product Image (Upload / URL)</label>
-          <div class="space-y-2">
-            <input type="file" id="prodImageFile" accept="image/*" onchange="previewSelectedImage(event)"
-              class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
-            <input type="url" id="prodImageUrl" placeholder="Or paste image URL (https://...)"
-              class="w-full px-3 py-1.5 rounded-lg border border-slate-300 text-xs outline-none focus:ring-2 focus:ring-brand-500">
-            <div id="imagePreviewContainer" class="hidden text-center mt-2">
-              <img id="imagePreview" src="" alt="Preview" class="h-28 mx-auto rounded-lg object-cover border border-slate-200 shadow-sm">
-            </div>
-          </div>
-        </div>
-
-        <div class="flex justify-end gap-3 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeAddProductModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm">Cancel</button>
-          <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-lg text-sm shadow-md">Save & Publish</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- AI MODAL -->
-  <div id="aiModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 space-y-5">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-slate-900">AI Customer Recommendation Engine</h3>
-            <p id="aiModalCustomerName" class="text-xs text-slate-500">Targeting Customer</p>
-          </div>
-        </div>
-        <button onclick="closeAiModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
-      </div>
-
-      <div id="aiLoadingState" class="py-12 text-center space-y-3">
-        <div class="inline-block animate-spin w-10 h-10 border-4 border-brand-500 border-t-transparent rounded-full"></div>
-        <p class="text-sm font-medium text-slate-700">Analyzing customer purchase history & catalog images...</p>
-        <p class="text-xs text-slate-400">Determining top affinity match, discount code, and high-converting SMS copy</p>
-      </div>
-
-      <div id="aiResultState" class="space-y-4 hidden">
-        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 flex gap-4 items-center">
-          <img id="aiProdImg" src="" alt="Product" class="w-20 h-20 rounded-lg object-cover border border-slate-200">
-          <div class="flex-1 min-w-0">
-            <span id="aiProdCategory" class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-brand-100 text-brand-800 uppercase">Category</span>
-            <h4 id="aiProdName" class="font-bold text-slate-900 text-base truncate mt-1">Product Title</h4>
-            <p class="text-sm font-bold text-emerald-600 mt-0.5">₹<span id="aiProdPrice">0</span> <span id="aiDiscountBadge" class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 ml-2">15% OFF</span></p>
-          </div>
-        </div>
-
-        <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3.5 text-xs text-indigo-900">
-          <p class="font-bold flex items-center gap-1.5 mb-1"><i class="fa-solid fa-brain"></i> AI Reasoning & Affinity:</p>
-          <p id="aiReasoningText" class="text-indigo-800 leading-relaxed"></p>
-        </div>
-
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="block text-xs font-semibold text-slate-700 uppercase">Personalized SMS Marketing Message</label>
-            <span id="aiSmsCharCount" class="text-xs text-slate-400 font-mono">0 / 160 chars</span>
-          </div>
-          <textarea id="aiSmsText" rows="3" oninput="updateCharCount()"
-            class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm font-sans outline-none focus:ring-2 focus:ring-brand-500"></textarea>
-        </div>
-
-        <div class="flex justify-end gap-3 pt-2">
-          <button type="button" onclick="closeAiModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg text-sm">Cancel</button>
-          <button type="button" onclick="dispatchGeneratedSMS()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg text-sm shadow-md flex items-center gap-2">
-            <i class="fa-solid fa-paper-plane"></i> Dispatch SMS Now
+        <ul class="space-y-2 text-purple-100 text-sm mb-6">
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Browse All Products</li>
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Add to Cart & Checkout</li>
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>AI-Recommended Products</li>
+          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Order History Tracking</li>
+        </ul>
+        <div class="space-y-2">
+          <button onclick="browseAsGuest(event)" class="w-full py-2.5 bg-purple-500/30 hover:bg-purple-500/50 text-white font-medium rounded-xl transition flex items-center justify-center gap-2 border border-purple-400/30">
+            <i class="fa-solid fa-eye"></i> Browse as Guest
+          </button>
+          <button class="w-full py-2.5 bg-purple-500 hover:bg-purple-400 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-to-bracket"></i> Login as Customer
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Login Form (shown after role selected) -->
+    <div id="loginFormContainer" class="hidden max-w-md mx-auto">
+      <div class="glass rounded-3xl p-8">
+        <div class="flex items-center gap-3 mb-6">
+          <button onclick="hideLoginForm()" class="text-indigo-300 hover:text-white transition">
+            <i class="fa-solid fa-arrow-left text-lg"></i>
+          </button>
+          <h3 id="loginFormTitle" class="text-white text-lg font-bold">Sign In</h3>
+        </div>
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">Email Address</label>
+            <input type="email" id="loginEmail" required placeholder="you@example.com"
+              class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-400 outline-none text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••"
+              class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-400 outline-none text-sm">
+          </div>
+          <input type="hidden" id="loginRole">
+          <button type="submit" id="loginBtn" class="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-to-bracket"></i> <span id="loginBtnText">Sign In</span>
+          </button>
+        </form>
+        <div class="mt-4 pt-4 border-t border-white/10">
+          <p class="text-indigo-300 text-xs text-center mb-2">Demo Credentials</p>
+          <button onclick="quickFill()" class="w-full py-2 bg-white/10 hover:bg-white/20 text-indigo-100 text-sm rounded-xl transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-bolt text-yellow-400"></i> <span id="quickFillLabel">Fill Demo Credentials</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <script src="/js/app.js"></script>
+  <script>
+    let selectedRole = null;
+
+    // Check if already logged in
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('shoppulse_user');
+      if (savedUser) {
+        const user = JSON.parse(savedUser);
+        redirectByRole(user.role);
+      }
+    });
+
+    function redirectByRole(role) {
+      if (role === 'admin' || role === 'owner') {
+        window.location.href = '/admin.html';
+      } else {
+        window.location.href = '/shop.html';
+      }
+    }
+
+    function showLoginForm(role) {
+      selectedRole = role;
+      document.getElementById('loginRole').value = role;
+      document.getElementById('loginFormContainer').classList.remove('hidden');
+      document.getElementById('loginFormContainer').scrollIntoView({ behavior: 'smooth' });
+
+      if (role === 'admin') {
+        document.getElementById('loginFormTitle').textContent = 'Admin Sign In';
+        document.getElementById('loginBtnText').textContent = 'Enter Dashboard';
+        document.getElementById('quickFillLabel').textContent = 'Use Demo Admin Account';
+      } else {
+        document.getElementById('loginFormTitle').textContent = 'Customer Sign In';
+        document.getElementById('loginBtnText').textContent = 'Enter Store';
+        document.getElementById('quickFillLabel').textContent = 'Use Demo Customer Account';
+      }
+    }
+
+    function hideLoginForm() {
+      document.getElementById('loginFormContainer').classList.add('hidden');
+      document.getElementById('errorMsg').classList.add('hidden');
+      selectedRole = null;
+    }
+
+    function browseAsGuest(e) {
+      e.stopPropagation();
+      window.location.href = '/shop.html';
+    }
+
+    function quickFill() {
+      if (selectedRole === 'admin') {
+        document.getElementById('loginEmail').value = 'owner@shop.com';
+        document.getElementById('loginPassword').value = 'admin123';
+      } else {
+        document.getElementById('loginEmail').value = 'rahul.sharma@example.com';
+        document.getElementById('loginPassword').value = 'customer123';
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          localStorage.setItem('shoppulse_user', JSON.stringify(data.user));
+          redirectByRole(data.user.role);
+        } else {
+          showError(data.error || 'Invalid credentials');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Sign In</span>';
+        }
+      } catch (err) {
+        showError('Server error: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Sign In</span>';
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>

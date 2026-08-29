@@ -168,6 +168,57 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, { success: true, campaigns });
     }
 
+    // ================= ORDERS API =================
+    if (pathname === '/api/orders' && method === 'POST') {
+      const body = await parseJsonBody(req);
+      const dbData = db.readDb();
+
+      // Build order record
+      const orderId = dbData.orders.length ? Math.max(...dbData.orders.map(o => o.id)) + 1 : 1;
+      const newOrder = {
+        id: orderId,
+        customerId: body.customerId || null,
+        customerName: body.customerName || 'Guest',
+        items: body.items || [],
+        total: body.total || 0,
+        status: 'Confirmed',
+        createdAt: new Date().toISOString()
+      };
+      dbData.orders.push(newOrder);
+
+      // Add a transaction per item for analytics
+      body.items && body.items.forEach(item => {
+        const txId = dbData.transactions.length ? Math.max(...dbData.transactions.map(t => t.id)) + 1 : 1;
+        dbData.transactions.push({
+          id: txId,
+          customerId: body.customerId || null,
+          productId: item.productId,
+          productName: item.productName,
+          amount: item.price * item.qty,
+          qty: item.qty,
+          date: new Date().toISOString()
+        });
+        // Decrement stock
+        const prod = dbData.products.find(p => p.id === Number(item.productId));
+        if (prod && prod.stock > 0) prod.stock -= item.qty;
+      });
+
+      db.writeDb(dbData);
+      return sendJson(res, 201, { success: true, orderId, order: newOrder });
+    }
+
+    // ================= REGISTER API =================
+    if (pathname === '/api/auth/register' && method === 'POST') {
+      const body = await parseJsonBody(req);
+      if (!body.email || !body.password || !body.name) {
+        return sendJson(res, 400, { success: false, error: 'Name, email and password required' });
+      }
+      const existing = db.findUserByEmail(body.email);
+      if (existing) return sendJson(res, 409, { success: false, error: 'Email already registered' });
+      const user = db.createUser({ name: body.name, email: body.email, password: body.password, phone: body.phone || '', role: 'customer' });
+      return sendJson(res, 201, { success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+    }
+
     // Fallback 404
     sendJson(res, 404, { error: 'Route not found' });
   } catch (err) {
