@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "sam-customer",
   "version": "1.0.0",
   "description": "AI-Powered Customer Analyzer, Ecommerce Recommendation Engine & SMS Dispatcher",
@@ -7,12 +7,5 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "dependencies": {
-    "express": "^4.19.2",
-    "express-session": "^1.18.0",
-    "multer": "^1.4.5-lts.1",
-    "bcryptjs": "^2.4.3",
-    "dotenv": "^16.4.5",
-    "ejs": "^3.1.10"
-  }
+  "dependencies": {}
 }
