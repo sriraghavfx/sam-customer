@@ -126,6 +126,32 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, { success: true, customers });
     }
 
+    if (pathname === '/api/customers' && method === 'POST') {
+      const body = await parseJsonBody(req);
+      if (!body.name || !body.email || !body.password) {
+        return sendJson(res, 400, { success: false, error: 'Name, email and password are required' });
+      }
+      const existing = db.findUserByEmail(body.email);
+      if (existing) return sendJson(res, 409, { success: false, error: 'Email already registered' });
+      const user = db.createUser({
+        name: body.name,
+        email: body.email,
+        password: body.password,
+        phone: body.phone || '',
+        role: 'customer'
+      });
+      return sendJson(res, 201, { success: true, user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role } });
+    }
+
+    if (pathname.startsWith('/api/customers/') && method === 'DELETE') {
+      const customerId = pathname.split('/').pop();
+      const user = db.findUserById(Number(customerId));
+      if (!user) return sendJson(res, 404, { success: false, error: 'Customer not found' });
+      if (user.role === 'admin') return sendJson(res, 403, { success: false, error: 'Cannot delete admin users' });
+      db.deleteUser(customerId);
+      return sendJson(res, 200, { success: true, message: 'Customer deleted' });
+    }
+
     // ================= AI RECOMMENDATION API =================
     if (pathname.startsWith('/api/ai/recommend/') && method === 'GET') {
       const customerId = pathname.split('/').pop();

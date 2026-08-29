@@ -65,6 +65,11 @@ module.exports = {
   getUsers: () => readDb().users,
   findUserByEmail: (email) => readDb().users.find(u => u.email.toLowerCase() === email.toLowerCase()),
   findUserById: (id) => readDb().users.find(u => u.id === id),
+  deleteUser: (id) => {
+    const db = readDb();
+    db.users = db.users.filter(u => u.id !== Number(id));
+    writeDb(db);
+  },
   createUser: (userData) => {
     const db = readDb();
     const newUser = {

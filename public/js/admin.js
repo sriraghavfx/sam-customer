@@ -155,6 +155,7 @@ function renderCustomers(customers) {
     <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
       <td class="px-5 py-3">
         <div class="font-medium text-slate-900">${c.name}</div>
+        <div class="text-xs text-slate-400">${c.email || ''}</div>
         <div class="text-xs text-slate-400">${c.phone || ''}</div>
       </td>
       <td class="px-5 py-3">
@@ -164,12 +165,74 @@ function renderCustomers(customers) {
       <td class="px-5 py-3 font-medium text-slate-800">₹${(c.totalSpent || 0).toLocaleString()}</td>
       <td class="px-5 py-3 text-slate-400 text-xs">${c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString('en-IN') : '—'}</td>
       <td class="px-5 py-3">
-        <button onclick="quickSMS(${c.id})" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
-          <i class="fa-solid fa-comment-sms"></i> SMS
-        </button>
+        <div class="flex items-center gap-2">
+          <button onclick="quickSMS(${c.id})" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
+            <i class="fa-solid fa-comment-sms"></i> SMS
+          </button>
+          <button onclick="deleteCustomer(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>
       </td>
     </tr>
   `).join('');
+}
+
+async function addCustomer(e) {
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData(form);
+  const btn = document.getElementById('addCustomerBtn');
+  const errEl = document.getElementById('addCustomerError');
+  errEl.classList.add('hidden');
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Adding...';
+
+  try {
+    const res = await fetch('/api/customers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: fd.get('name'),
+        email: fd.get('email'),
+        phone: fd.get('phone'),
+        password: fd.get('password')
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`Customer "${fd.get('name')}" added successfully!`);
+      document.getElementById('addCustomerModal').classList.add('hidden');
+      form.reset();
+      loadCustomers();
+    } else {
+      errEl.textContent = data.error || 'Failed to add customer';
+      errEl.classList.remove('hidden');
+    }
+  } catch (err) {
+    errEl.textContent = 'Error: ' + err.message;
+    errEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Add Customer';
+  }
+}
+
+async function deleteCustomer(id, name) {
+  if (!confirm(`Are you sure you want to delete "${name}"?\nThis action cannot be undone.`)) return;
+  try {
+    const res = await fetch(`/api/customers/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`Customer "${name}" deleted.`, 'warning');
+      loadCustomers();
+    } else {
+      showToast(data.error || 'Delete failed', 'error');
+    }
+  } catch (err) {
+    showToast('Error: ' + err.message, 'error');
+  }
 }
 
 function filterCustomers() {
