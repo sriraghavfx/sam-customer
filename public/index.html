@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopPulse AI – Login</title>
+  <title>SAM Ecommerce Store – Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -37,7 +37,7 @@
       <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/20 glass text-white text-3xl mb-5 shadow-xl">
         <i class="fa-solid fa-store"></i>
       </div>
-      <h1 class="text-4xl font-extrabold text-white tracking-tight">ShopPulse <span class="text-indigo-300">AI</span></h1>
+      <h1 class="text-4xl font-extrabold text-white tracking-tight">SAM <span class="text-indigo-300">AI</span></h1>
       <p class="text-indigo-200 mt-2 text-base">AI-Powered Retail Analytics & Smart E-Commerce</p>
     </div>
 
@@ -138,7 +138,7 @@
 
     // Check if already logged in
     window.addEventListener('DOMContentLoaded', () => {
-      const savedUser = localStorage.getItem('shoppulse_user');
+      const savedUser = localStorage.getItem('SAM_user');
       if (savedUser) {
         const user = JSON.parse(savedUser);
         redirectByRole(user.role);
@@ -209,7 +209,7 @@
         const data = await res.json();
 
         if (data.success) {
-          localStorage.setItem('shoppulse_user', JSON.stringify(data.user));
+          localStorage.setItem('SAM_user', JSON.stringify(data.user));
           redirectByRole(data.user.role);
         } else {
           showError(data.error || 'Invalid credentials');

@@ -10,7 +10,7 @@ let activeCategory = '';
 
 // Init
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('shoppulse_user');
+  const saved = localStorage.getItem('SAM_user');
   if (saved) {
     currentUser = JSON.parse(saved);
     document.getElementById('userGreeting').classList.remove('hidden');
@@ -18,12 +18,12 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('loginBtn').textContent = 'Logout';
     document.getElementById('loginBtn').href = '#';
     document.getElementById('loginBtn').onclick = () => {
-      localStorage.removeItem('shoppulse_user');
+      localStorage.removeItem('SAM_user');
       window.location.reload();
     };
   }
 
-  const savedCart = localStorage.getItem('shoppulse_cart');
+  const savedCart = localStorage.getItem('SAM_cart');
   if (savedCart) cart = JSON.parse(savedCart);
   updateCartUI();
   loadProducts();
@@ -152,14 +152,14 @@ function addToCart(productId) {
   } else {
     cart.push({ id: product.id, name: product.name, price: product.price, imageUrl: product.imageUrl, qty: 1 });
   }
-  localStorage.setItem('shoppulse_cart', JSON.stringify(cart));
+  localStorage.setItem('SAM_cart', JSON.stringify(cart));
   updateCartUI();
   showToast(`${product.name} added to cart!`);
 }
 
 function removeFromCart(productId) {
   cart = cart.filter(i => i.id !== productId);
-  localStorage.setItem('shoppulse_cart', JSON.stringify(cart));
+  localStorage.setItem('SAM_cart', JSON.stringify(cart));
   updateCartUI();
 }
 
@@ -169,7 +169,7 @@ function changeQty(productId, delta) {
   item.qty += delta;
   if (item.qty <= 0) removeFromCart(productId);
   else {
-    localStorage.setItem('shoppulse_cart', JSON.stringify(cart));
+    localStorage.setItem('SAM_cart', JSON.stringify(cart));
     updateCartUI();
   }
 }
@@ -260,7 +260,7 @@ async function placeOrder() {
     const data = await res.json();
     if (data.success) {
       cart = [];
-      localStorage.removeItem('shoppulse_cart');
+      localStorage.removeItem('SAM_cart');
       updateCartUI();
       toggleCart();
       document.getElementById('orderSuccessMsg').textContent =

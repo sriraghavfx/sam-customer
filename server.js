@@ -1,4 +1,4 @@
-﻿const http = require('http');
+const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -191,8 +191,8 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`====================================================`);
-  console.log(`🚀 ShopPulse AI Server is running live!`);
-  console.log(`📍 Web Dashboard: http://localhost:${PORT}`);
-  console.log(`👤 Demo Shop Owner: owner@shop.com | Password: admin123`);
+  console.log(`?? SAM Ecommerce Store Server is running live!`);
+  console.log(`?? Web Dashboard: http://localhost:${PORT}`);
+  console.log(`?? Demo Shop Owner: owner@shop.com | Password: admin123`);
   console.log(`====================================================`);
 });

@@ -9,7 +9,7 @@ let currentAiRec = null;
 
 // Auth Guard
 window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('shoppulse_user');
+  const saved = localStorage.getItem('SAM_user');
   if (!saved) return window.location.href = '/index.html';
   currentUser = JSON.parse(saved);
   if (currentUser.role !== 'admin' && currentUser.role !== 'owner') {
@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function handleLogout() {
-  localStorage.removeItem('shoppulse_user');
+  localStorage.removeItem('SAM_user');
   window.location.href = '/index.html';
 }
 

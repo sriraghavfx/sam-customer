@@ -1,10 +1,10 @@
-﻿# ShopPulse AI: AI Customer Analyzer & Ecommerce SMS Recommendation Engine
+# SAM Ecommerce Store: AI Customer Analyzer & Ecommerce SMS Recommendation Engine
 
 An intelligent, full-stack ecommerce and customer analytics platform built for shop owners. It tracks customer transactions, performs RFM (Recency, Frequency, Monetary) segmentation, supports product image uploads, and automatically generates high-converting, personalized product recommendations dispatched via SMS.
 
 ---
 
-## 🌟 Key Features
+## ?? Key Features
 
 1. **Shop Owner Storefront & Inventory**:
    - Product catalog with live stock status and discount pricing.
@@ -28,7 +28,7 @@ An intelligent, full-stack ecommerce and customer analytics platform built for s
 
 ---
 
-## 🚀 Quick Start
+## ?? Quick Start
 
 ### 1. Launch Server
 ```bash
@@ -45,7 +45,7 @@ Visit [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## ⚙️ Environment Configuration
+## ?? Environment Configuration
 
 Copy `.env.example` to `.env`:
 ```env

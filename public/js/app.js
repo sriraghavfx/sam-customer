@@ -1,11 +1,11 @@
-﻿let currentUser = null;
+let currentUser = null;
 let currentAiRecommendation = null;
 let currentTargetCustomer = null;
 let charts = {};
 let allCustomers = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-  const savedUser = localStorage.getItem('shoppulse_user');
+  const savedUser = localStorage.getItem('SAM_user');
   if (savedUser) {
     currentUser = JSON.parse(savedUser);
     showApp();
@@ -35,7 +35,7 @@ async function handleLogin(e) {
     const data = await res.json();
     if (data.success) {
       currentUser = data.user;
-      localStorage.setItem('shoppulse_user', JSON.stringify(currentUser));
+      localStorage.setItem('SAM_user', JSON.stringify(currentUser));
       showApp();
     } else {
       alert(data.error || 'Invalid credentials');
@@ -46,7 +46,7 @@ async function handleLogin(e) {
 }
 
 function handleLogout() {
-  localStorage.removeItem('shoppulse_user');
+  localStorage.removeItem('SAM_user');
   currentUser = null;
   document.getElementById('authScreen').classList.remove('hidden');
   document.getElementById('mainApp').classList.add('hidden');
@@ -89,9 +89,9 @@ async function loadDashboard() {
     const data = await res.json();
     if (data.success) {
       const m = data.metrics;
-      document.getElementById('kpiRevenue').innerText = '₹' + m.totalRevenue.toLocaleString('en-IN');
+      document.getElementById('kpiRevenue').innerText = '?' + m.totalRevenue.toLocaleString('en-IN');
       document.getElementById('kpiOrders').innerText = m.totalOrders;
-      document.getElementById('kpiAOV').innerText = '₹' + m.aov.toLocaleString('en-IN');
+      document.getElementById('kpiAOV').innerText = '?' + m.aov.toLocaleString('en-IN');
       document.getElementById('kpiCustomers').innerText = m.totalCustomers;
       document.getElementById('kpiRepeatRate').innerText = m.repeatRate + '%';
       document.getElementById('kpiAtRisk').innerText = m.atRiskCount;
@@ -118,7 +118,7 @@ function renderCharts() {
       data: {
         labels: Object.keys(m.monthlySales),
         datasets: [{
-          label: 'Monthly Revenue (₹)',
+          label: 'Monthly Revenue (?)',
           data: Object.values(m.monthlySales),
           borderColor: '#4f46e5',
           backgroundColor: 'rgba(79, 70, 229, 0.1)',
@@ -171,7 +171,7 @@ function renderCharts() {
         labels: [...histLabels, ...fLabels],
         datasets: [
           {
-            label: 'Historical Sales (₹)',
+            label: 'Historical Sales (?)',
             data: [...histValues, null, null, null],
             borderColor: '#4f46e5',
             backgroundColor: 'rgba(79, 70, 229, 0.1)',
@@ -179,7 +179,7 @@ function renderCharts() {
             tension: 0.3
           },
           {
-            label: 'AI Forecast (₹)',
+            label: 'AI Forecast (?)',
             data: [...Array(histValues.length - 1).fill(null), histValues[histValues.length - 1], ...fValues],
             borderColor: '#f59e0b',
             borderDash: [6, 6],
@@ -218,8 +218,8 @@ async function loadProducts() {
             </div>
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
               <div>
-                <span class="text-base font-bold text-slate-900">₹${p.price.toLocaleString('en-IN')}</span>
-                ${p.originalPrice ? `<span class="text-xs text-slate-400 line-through ml-1.5">₹${p.originalPrice.toLocaleString('en-IN')}</span>` : ''}
+                <span class="text-base font-bold text-slate-900">?${p.price.toLocaleString('en-IN')}</span>
+                ${p.originalPrice ? `<span class="text-xs text-slate-400 line-through ml-1.5">?${p.originalPrice.toLocaleString('en-IN')}</span>` : ''}
               </div>
               <span class="text-xs font-semibold px-2 py-0.5 rounded ${p.stock > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">
                 ${p.stock > 0 ? `${p.stock} in stock` : 'Out of stock'}
@@ -325,7 +325,7 @@ function renderCustomersTable(customers) {
         </span>
       </td>
       <td class="px-5 py-4 font-medium text-slate-700">${c.ordersCount} orders</td>
-      <td class="px-5 py-4 font-bold text-slate-900">₹${c.monetary.toLocaleString('en-IN')}</td>
+      <td class="px-5 py-4 font-bold text-slate-900">?${c.monetary.toLocaleString('en-IN')}</td>
       <td class="px-5 py-4 text-slate-500 text-xs">${typeof c.recencyDays === 'number' ? `${c.recencyDays} days ago` : c.recencyDays}</td>
       <td class="px-5 py-4 text-xs font-semibold text-indigo-600">${c.topCategory}</td>
       <td class="px-5 py-4 text-right">
@@ -349,7 +349,7 @@ async function openAiRecommendationModal(customerId) {
   if (!customer) return;
 
   currentTargetCustomer = customer;
-  document.getElementById('aiModalCustomerName').innerText = `Targeting ${customer.name} (${customer.segment} • ${customer.phone})`;
+  document.getElementById('aiModalCustomerName').innerText = `Targeting ${customer.name} (${customer.segment} � ${customer.phone})`;
   document.getElementById('aiModal').classList.remove('hidden');
   document.getElementById('aiLoadingState').classList.remove('hidden');
   document.getElementById('aiResultState').classList.add('hidden');
