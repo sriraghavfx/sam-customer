@@ -165,7 +165,10 @@ function renderCustomers(customers) {
       <td class="px-5 py-3 font-medium text-slate-800">₹${(c.totalSpent || 0).toLocaleString()}</td>
       <td class="px-5 py-3 text-slate-400 text-xs">${c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString('en-IN') : '—'}</td>
       <td class="px-5 py-3">
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="viewPurchases(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-medium rounded-lg transition flex items-center gap-1">
+            <i class="fa-solid fa-bag-shopping"></i> Purchases
+          </button>
           <button onclick="quickSMS(${c.id})" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
             <i class="fa-solid fa-comment-sms"></i> SMS
           </button>
@@ -239,6 +242,85 @@ function filterCustomers() {
   const seg = document.getElementById('segmentFilter').value;
   const filtered = seg ? allCustomers.filter(c => c.segment === seg) : allCustomers;
   renderCustomers(filtered);
+}
+
+// ===== CUSTOMER PURCHASES PANEL =====
+async function viewPurchases(customerId, customerName) {
+  // Open panel
+  const panel = document.getElementById('purchasesPanel');
+  const overlay = document.getElementById('purchasesOverlay');
+  document.getElementById('purchasesPanelTitle').textContent = customerName + "'s Purchases";
+  document.getElementById('purchasesPanelSub').textContent = 'Full purchase history';
+  document.getElementById('pTotalSpent').textContent = '—';
+  document.getElementById('pTotalOrders').textContent = '—';
+  document.getElementById('pTotalItems').textContent = '—';
+  document.getElementById('purchasesList').innerHTML = `
+    <div class="flex items-center justify-center h-40 text-slate-400">
+      <i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading...
+    </div>`;
+  overlay.classList.remove('hidden');
+  setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+
+  try {
+    const res = await fetch(`/api/customers/${customerId}/purchases`);
+    const data = await res.json();
+
+    if (!data.success) throw new Error('Failed to load');
+
+    // Update stats
+    document.getElementById('pTotalSpent').textContent = '₹' + (data.totalSpent || 0).toLocaleString();
+    document.getElementById('pTotalOrders').textContent = data.orders.length;
+    document.getElementById('pTotalItems').textContent = data.totalItems || 0;
+    document.getElementById('purchasesPanelSub').textContent =
+      `${data.transactions.length} product purchase${data.transactions.length !== 1 ? 's' : ''}`;
+
+    // Render purchases
+    if (!data.transactions.length) {
+      document.getElementById('purchasesList').innerHTML = `
+        <div class="flex flex-col items-center justify-center h-48 text-slate-400">
+          <i class="fa-solid fa-bag-shopping text-4xl mb-3 opacity-30"></i>
+          <p class="text-sm">No purchases yet</p>
+          <p class="text-xs mt-1">This customer hasn't bought anything yet</p>
+        </div>`;
+      return;
+    }
+
+    document.getElementById('purchasesList').innerHTML = data.transactions.map(t => `
+      <div class="flex items-center gap-4 bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <div class="w-16 h-16 rounded-xl overflow-hidden bg-white border border-slate-200 flex-shrink-0">
+          <img src="${t.imageUrl || 'https://via.placeholder.com/64?text=P'}"
+            alt="${t.productName}"
+            class="w-full h-full object-cover"
+            onerror="this.src='https://via.placeholder.com/64?text=P'">
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-slate-900 text-sm truncate">${t.productName}</div>
+          <div class="text-xs text-slate-400 mt-0.5">${t.category || 'General'}</div>
+          <div class="flex items-center gap-3 mt-1.5">
+            <span class="text-brand-600 font-bold text-sm">₹${(t.amount || 0).toLocaleString()}</span>
+            <span class="text-xs text-slate-400">Qty: ${t.qty || 1}</span>
+            <span class="text-xs text-slate-400">${t.date ? new Date(t.date).toLocaleDateString('en-IN') : '—'}</span>
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+            <i class="fa-solid fa-check-circle mr-1"></i> Purchased
+          </span>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    document.getElementById('purchasesList').innerHTML = `
+      <div class="text-center text-red-500 py-8">Failed to load purchases: ${err.message}</div>`;
+  }
+}
+
+function closePurchases() {
+  const panel = document.getElementById('purchasesPanel');
+  const overlay = document.getElementById('purchasesOverlay');
+  panel.classList.add('translate-x-full');
+  setTimeout(() => overlay.classList.add('hidden'), 300);
 }
 
 // ===== PRODUCTS =====

@@ -126,6 +126,33 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, { success: true, customers });
     }
 
+    // GET /api/customers/:id/purchases
+    if (pathname.match(/^\/api\/customers\/\d+\/purchases$/) && method === 'GET') {
+      const customerId = pathname.split('/')[3];
+      const orders = db.getOrdersByCustomer(customerId);
+      const transactions = db.getTransactionsByCustomer(customerId);
+      const products = db.getProducts();
+
+      // Enrich transactions with product image & category
+      const enriched = transactions.map(t => {
+        const prod = products.find(p => p.id === Number(t.productId)) || {};
+        return {
+          ...t,
+          imageUrl: prod.imageUrl || null,
+          category: prod.category || 'General',
+          productPrice: prod.price || t.amount
+        };
+      });
+
+      return sendJson(res, 200, {
+        success: true,
+        orders,
+        transactions: enriched,
+        totalSpent: transactions.reduce((sum, t) => sum + (t.amount || 0), 0),
+        totalItems: transactions.reduce((sum, t) => sum + (t.qty || 1), 0)
+      });
+    }
+
     if (pathname === '/api/customers' && method === 'POST') {
       const body = await parseJsonBody(req);
       if (!body.name || !body.email || !body.password) {
