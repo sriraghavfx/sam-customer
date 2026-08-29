@@ -3,14 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
-const db = require('./db');
-const { calculateRFM, getDashboardMetrics } = require('./services/analytics_service');
-const { getRecommendation } = require('./services/ai_recommender');
-const { sendSMS } = require('./services/sms_service');
-const { runSeed } = require('./seed');
+const db = require('../db');
+const { calculateRFM, getDashboardMetrics } = require('../services/analytics_service');
+const { getRecommendation } = require('../services/ai_recommender');
+const { sendSMS } = require('../services/sms_service');
+const { runSeed } = require('../seed');
 
 const PORT = process.env.PORT || 3000;
-const PUBLIC_DIR = path.join(__dirname, 'public');
+const PUBLIC_DIR = path.join(__dirname, '../public');
 
 // Initialize seed if database is empty
 if (db.getUsers().length === 0) {
@@ -19,6 +19,9 @@ if (db.getUsers().length === 0) {
 
 function parseJsonBody(req) {
   return new Promise((resolve, reject) => {
+    if (req.body) {
+      return resolve(typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
+    }
     let body = '';
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
