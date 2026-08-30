@@ -20,6 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadCustomers();
   loadProducts();
   loadCampaigns();
+  loadSegments();
 });
 
 function handleLogout() {
@@ -139,16 +140,15 @@ async function loadCustomers() {
 }
 
 function renderCustomers(customers) {
-  const segColors = {
+  const rfmColors = {
     Champions: 'bg-gray-900 text-white',
     'Loyal Customers': 'bg-gray-700 text-white',
     'New Customers': 'bg-gray-500 text-white',
-    'At-Risk': 'bg-amber-100 text-gray-700',
+    'At-Risk': 'bg-gray-300 text-gray-800',
     'Lost Customers': 'bg-black text-white',
-    'Potential Loyalist': 'bg-gray-300 text-gray-900',
   };
   if (!customers.length) {
-    document.getElementById('customersTable').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-slate-400">No customers found</td></tr>';
+    document.getElementById('customersTable').innerHTML = '<tr><td colspan="7" class="text-center py-12 text-slate-400">No customers found</td></tr>';
     return;
   }
   document.getElementById('customersTable').innerHTML = customers.map(c => `
@@ -159,26 +159,127 @@ function renderCustomers(customers) {
         <div class="text-xs text-slate-400">${c.phone || ''}</div>
       </td>
       <td class="px-5 py-3">
-        <span class="segment-chip ${segColors[c.segment] || 'bg-slate-100 text-slate-600'}">${c.segment}</span>
+        <span class="segment-chip ${rfmColors[c.segment] || 'bg-gray-100 text-gray-700'}">${c.segment}</span>
+      </td>
+      <td class="px-5 py-3">
+        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-black text-white">
+          ${c.productSegmentIcon || '🛒'} ${c.primaryProductSegment || '—'}
+        </span>
+        ${c.topCategory && c.topCategory !== 'None' ? `<div class="text-xs text-slate-400 mt-1">Top: ${c.topCategory}</div>` : ''}
       </td>
       <td class="px-5 py-3 text-slate-600">${c.orderCount || 0}</td>
       <td class="px-5 py-3 font-medium text-slate-800">₹${(c.totalSpent || 0).toLocaleString()}</td>
       <td class="px-5 py-3 text-slate-400 text-xs">${c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString('en-IN') : '—'}</td>
       <td class="px-5 py-3">
         <div class="flex items-center gap-2 flex-wrap">
-          <button onclick="viewPurchases(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-medium rounded-lg transition flex items-center gap-1">
+          <button onclick="viewPurchases(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-900 text-xs font-medium rounded-lg transition flex items-center gap-1">
             <i class="fa-solid fa-bag-shopping"></i> Purchases
           </button>
           <button onclick="quickSMS(${c.id})" class="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-900 text-xs font-medium rounded-lg transition flex items-center gap-1">
             <i class="fa-solid fa-comment-sms"></i> SMS
           </button>
-          <button onclick="deleteCustomer(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
-            <i class="fa-solid fa-trash"></i> Delete
+          <button onclick="deleteCustomer(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-red-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </td>
     </tr>
   `).join('');
+}
+
+// ===== PRODUCT SEGMENTS =====
+async function loadSegments() {
+  try {
+    const res = await fetch('/api/customers/segments/products');
+    const data = await res.json();
+    if (!data.success) return;
+    renderCategoryRevenue(data.topCategories || []);
+    renderProductSegments(data.segments || []);
+  } catch (e) { console.error('Segments error:', e); }
+}
+
+function renderCategoryRevenue(categories) {
+  const el = document.getElementById('categoryRevenueChart');
+  if (!el) return;
+  if (!categories.length) { el.innerHTML = '<p class="text-slate-400 text-sm">No sales data yet</p>'; return; }
+  const max = categories[0].revenue;
+  el.innerHTML = categories.map(({ cat, revenue }) => {
+    const pct = max > 0 ? Math.round((revenue / max) * 100) : 0;
+    return `
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span class="font-medium text-slate-800">${cat}</span>
+          <span class="text-slate-500">₹${revenue.toLocaleString()}</span>
+        </div>
+        <div class="h-3 bg-gray-100 rounded-full overflow-hidden">
+          <div class="h-full bg-black rounded-full transition-all duration-700" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderProductSegments(segments) {
+  const grid = document.getElementById('productSegmentsGrid');
+  if (!grid) return;
+  const nonEmpty = segments.filter(s => s.customers.length > 0);
+  if (!nonEmpty.length) {
+    grid.innerHTML = '<p class="col-span-full text-slate-400 text-sm py-8 text-center">No segment data yet — customers need to make purchases first.</p>';
+    return;
+  }
+  grid.innerHTML = nonEmpty.map(seg => {
+    const topCats = {};
+    seg.customers.forEach(c => { if (c.topCategory) topCats[c.topCategory] = (topCats[c.topCategory] || 0) + 1; });
+    const catList = Object.entries(topCats).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([cat]) => cat);
+    return `
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:shadow-md transition">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <div class="text-2xl mb-1">${seg.icon || '🏷️'}</div>
+            <h3 class="font-bold text-slate-900 text-base">${seg.label}</h3>
+            <p class="text-xs text-slate-400 mt-0.5">${seg.description || ''}</p>
+          </div>
+          <div class="text-right">
+            <div class="text-2xl font-extrabold text-slate-900">${seg.customers.length}</div>
+            <div class="text-xs text-slate-400">customers</div>
+          </div>
+        </div>
+        <div class="text-sm text-slate-600 mb-3">
+          <span class="font-medium text-slate-800">₹${(seg.totalSpent || 0).toLocaleString()}</span>
+          <span class="text-slate-400 ml-1">total revenue</span>
+        </div>
+        ${catList.length ? `<div class="flex flex-wrap gap-1 mb-4">${catList.map(cat => `<span class="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full">${cat}</span>`).join('')}</div>` : ''}
+        <div class="space-y-1 max-h-32 overflow-y-auto">
+          ${seg.customers.slice(0, 5).map(c => `
+            <div class="flex items-center justify-between text-xs py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-800 truncate mr-2">${c.name}</span>
+              <span class="text-slate-400 flex-shrink-0">₹${(c.totalSpent || 0).toLocaleString()}</span>
+            </div>`).join('')}
+          ${seg.customers.length > 5 ? `<div class="text-xs text-slate-400 pt-1 text-center">+${seg.customers.length - 5} more</div>` : ''}
+        </div>
+        <button onclick="notifySegment('${seg.label}')" class="mt-4 w-full py-2 border border-gray-200 hover:bg-gray-900 hover:text-white text-gray-700 text-xs font-semibold rounded-xl transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-bell"></i> Notify this Segment
+        </button>
+      </div>`;
+  }).join('');
+}
+
+function notifySegment(segmentLabel) {
+  switchTab('sms');
+  // pre-select "By Segment" radio and set value
+  const radio = document.querySelector('input[name="notifTarget"][value="segment"]');
+  if (radio) radio.checked = true;
+  const sel = document.getElementById('notifSegmentSelect');
+  if (sel) {
+    // Map product segment → closest RFM segment for targeting
+    const map = {
+      'Big Spender': 'Champions', 'Frequent Buyer': 'Loyal Customers',
+      'Category Loyalist': 'Loyal Customers', 'Deal Hunter': 'At-Risk',
+      'Variety Shopper': 'New Customers', 'Window Shopper': 'New Customers', 'New Customer': 'New Customers'
+    };
+    const target = map[segmentLabel] || 'All';
+    for (const opt of sel.options) { if (opt.value === target) { sel.value = target; break; } }
+  }
+  showToast(`Ready to notify "${segmentLabel}" customers via Notifications tab`);
 }
 
 async function addCustomer(e) {

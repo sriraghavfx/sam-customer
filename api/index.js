@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 
 const db = require('../db');
-const { calculateRFM, getDashboardMetrics } = require('../services/analytics_service');
+const { calculateRFM, getDashboardMetrics, getProductSegmentSummary } = require('../services/analytics_service');
 const { getRecommendation } = require('../services/ai_recommender');
 const { sendSMS } = require('../services/sms_service');
 const { runSeed } = require('../seed');
@@ -124,6 +124,12 @@ module.exports = async (req, res) => {
     if (pathname === '/api/customers' && method === 'GET') {
       const customers = calculateRFM();
       return sendJson(res, 200, { success: true, customers });
+    }
+
+    // GET /api/customers/segments/products — product-based segment summary
+    if (pathname === '/api/customers/segments/products' && method === 'GET') {
+      const summary = getProductSegmentSummary();
+      return sendJson(res, 200, { success: true, ...summary });
     }
 
     // GET /api/customers/:id/purchases
