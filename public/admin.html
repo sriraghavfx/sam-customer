@@ -57,7 +57,7 @@
           <i class="fa-solid fa-box w-5"></i> Products
         </button>
         <button onclick="switchTab('sms')" id="nav-sms" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition">
-          <i class="fa-solid fa-comment-sms w-5"></i> AI SMS
+          <i class="fa-solid fa-bell w-5"></i> Notifications
         </button>
         <button onclick="switchTab('campaigns')" id="nav-campaigns" class="nav-link w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition">
           <i class="fa-solid fa-bullhorn w-5"></i> Campaigns
@@ -172,74 +172,130 @@
         </div>
       </div>
 
-      <!-- ===== AI SMS TAB ===== -->
+
+      <!-- ===== NOTIFICATIONS TAB ===== -->
       <div id="tab-sms" class="tab-content">
         <div class="mb-6">
-          <h1 class="text-2xl font-bold text-slate-900">AI SMS Recommendations</h1>
-          <p class="text-slate-500 text-sm">Select a customer → AI generates a personalised product recommendation → Send SMS</p>
+          <h1 class="text-2xl font-bold text-slate-900">Product Notifications</h1>
+          <p class="text-slate-500 text-sm">Pick a product → AI writes the message → Send SMS notification to customers</p>
         </div>
+
         <div class="grid lg:grid-cols-2 gap-8 items-start">
-          <!-- Left: Customer + Controls -->
+
+          <!-- LEFT: Product + Recipients -->
           <div class="space-y-4">
+
+            <!-- Step 1: Choose Product -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Select Customer</label>
-              <select id="smsCustomerSelect" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-sm">
-                <option value="">— Choose a customer —</option>
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+                <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Choose Product to Promote</span>
+              </div>
+              <select id="notifProductSelect" onchange="onProductSelected()" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-sm">
+                <option value="">— Select a product —</option>
               </select>
-              <button onclick="generateAI()" class="mt-4 w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Recommendation
+              <!-- Product preview card -->
+              <div id="notifProductPreview" class="hidden mt-4 flex gap-3 bg-slate-50 rounded-xl p-3 border border-slate-200">
+                <img id="notifProductImg" src="" alt="" class="w-16 h-16 rounded-xl object-cover border border-slate-200">
+                <div class="flex-1 min-w-0">
+                  <div class="font-semibold text-slate-900 text-sm" id="notifProductName"></div>
+                  <div class="text-xs text-slate-400" id="notifProductCat"></div>
+                  <div class="text-brand-600 font-bold mt-1" id="notifProductPrice"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Choose Recipients -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+                <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Choose Recipients</span>
+              </div>
+              <div class="space-y-2">
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+                  <input type="radio" name="notifTarget" value="all" class="accent-brand-600"> 
+                  <div><div class="text-sm font-medium text-slate-800">All Customers</div><div class="text-xs text-slate-400">Send to everyone in your store</div></div>
+                </label>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+                  <input type="radio" name="notifTarget" value="segment" class="accent-brand-600" checked>
+                  <div class="flex-1">
+                    <div class="text-sm font-medium text-slate-800">By Segment</div>
+                    <div class="text-xs text-slate-400">Target a specific customer group</div>
+                  </div>
+                </label>
+                <select id="notifSegmentSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none ml-0">
+                  <option value="Champions">Champions</option>
+                  <option value="Loyal Customers">Loyal Customers</option>
+                  <option value="At-Risk" selected>At-Risk</option>
+                  <option value="Lost Customers">Lost Customers</option>
+                  <option value="New Customers">New Customers</option>
+                </select>
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+                  <input type="radio" name="notifTarget" value="single" class="accent-brand-600">
+                  <div class="flex-1">
+                    <div class="text-sm font-medium text-slate-800">Single Customer</div>
+                    <div class="text-xs text-slate-400">Pick one specific customer</div>
+                  </div>
+                </label>
+                <select id="notifCustomerSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                  <option value="">— Choose customer —</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Step 3: Generate & Send -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+                <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Generate & Send</span>
+              </div>
+              <div class="mb-3">
+                <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Discount Code (optional)</label>
+                <input type="text" id="notifDiscountCode" placeholder="e.g. SALE20" value="SAVE10"
+                  class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+              </div>
+              <button onclick="generateNotification()" id="generateNotifBtn"
+                class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Notification
               </button>
             </div>
 
-            <div id="aiResultCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-brand-100">
+            <!-- AI Result Card -->
+            <div id="notifResultCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-brand-100">
               <div class="flex items-center gap-2 mb-4">
                 <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white text-sm"><i class="fa-solid fa-robot"></i></div>
-                <span class="font-semibold text-slate-800">AI Recommendation</span>
-                <span id="aiConfidence" class="ml-auto text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium"></span>
+                <span class="font-semibold text-slate-800">AI Notification Message</span>
+                <span id="notifRecipientCount" class="ml-auto text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium"></span>
               </div>
-              <p class="text-sm text-slate-600 mb-1"><span class="font-medium text-slate-800">Product:</span> <span id="aiProductName"></span></p>
-              <p class="text-sm text-slate-600 mb-1"><span class="font-medium text-slate-800">Reason:</span> <span id="aiReason"></span></p>
-              <p class="text-sm text-slate-600 mb-4"><span class="font-medium text-slate-800">Discount:</span> <span id="aiDiscount" class="text-brand-600 font-mono"></span></p>
-              <button onclick="sendSMS()" class="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-paper-plane"></i> Send SMS
+              <textarea id="notifMessageEdit" rows="4"
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none resize-none mb-4"></textarea>
+              <button onclick="sendProductNotification()" id="sendNotifBtn"
+                class="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane"></i> Send Notification
               </button>
             </div>
           </div>
 
-          <!-- Right: Phone mockup -->
-          <div class="flex justify-center">
+          <!-- RIGHT: Phone mockup -->
+          <div class="flex justify-center sticky top-24">
             <div class="phone-mockup bg-slate-100 flex flex-col overflow-hidden">
-              <div class="bg-slate-800 text-white text-center text-xs py-2 font-medium tracking-wide">Messages</div>
+              <div class="bg-slate-800 text-white text-center text-xs py-2 font-medium tracking-wide">
+                <i class="fa-solid fa-bell mr-1"></i> Notifications
+              </div>
               <div class="flex-1 p-4 overflow-y-auto">
                 <div class="text-center text-xs text-slate-400 mb-4">Today</div>
-                <div id="smsPreviewBubble" class="hidden">
-                  <div class="bg-green-500 text-white text-xs rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%] shadow-sm leading-relaxed" id="smsPreviewText"></div>
+                <div id="notifPreviewBubble" class="hidden space-y-1">
+                  <div class="text-xs text-slate-400 font-medium mb-1">SAM Ecommerce Store</div>
+                  <div class="bg-indigo-600 text-white text-xs rounded-2xl rounded-tl-sm px-4 py-3 max-w-[90%] shadow-sm leading-relaxed" id="notifPreviewText"></div>
                   <div class="text-xs text-slate-400 mt-1">Delivered ✓✓</div>
                 </div>
-                <div id="smsPlaceholder" class="flex flex-col items-center justify-center h-full text-slate-400 text-xs text-center">
-                  <i class="fa-solid fa-comment-sms text-4xl mb-3 opacity-30"></i>
-                  <p>AI SMS preview will appear here after generating a recommendation</p>
+                <div id="notifPlaceholder" class="flex flex-col items-center justify-center h-full text-slate-400 text-xs text-center">
+                  <i class="fa-solid fa-bell text-4xl mb-3 opacity-30"></i>
+                  <p>Notification preview appears here</p>
+                  <p class="mt-1 opacity-60">Select a product and generate</p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Bulk SMS -->
-        <div class="mt-8 bg-amber-50 border border-amber-200 rounded-2xl p-6">
-          <h3 class="font-semibold text-amber-900 mb-2"><i class="fa-solid fa-bolt mr-2 text-amber-500"></i>Bulk SMS Campaign</h3>
-          <p class="text-sm text-amber-700 mb-4">Send AI-personalised SMS to all customers in a segment at once.</p>
-          <div class="flex gap-3">
-            <select id="bulkSegment" class="flex-1 px-4 py-2.5 rounded-xl border border-amber-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
-              <option>At-Risk</option>
-              <option>Lost Customers</option>
-              <option>Champions</option>
-              <option>Loyal Customers</option>
-              <option>New Customers</option>
-            </select>
-            <button onclick="sendBulkSMS()" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl transition">
-              Send Bulk SMS
-            </button>
           </div>
         </div>
       </div>

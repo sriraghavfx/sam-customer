@@ -186,6 +186,40 @@ module.exports = async (req, res) => {
       return sendJson(res, 200, { success: true, recommendation });
     }
 
+    // ================= PRODUCT NOTIFICATION AI API =================
+    if (pathname === '/api/ai/product-notification' && method === 'POST') {
+      const body = await parseJsonBody(req);
+      const { productId, discountCode = 'SAVE10' } = body;
+      const products = db.getProducts();
+      const product = products.find(p => String(p.id) === String(productId));
+      if (!product) return sendJson(res, 404, { success: false, error: 'Product not found' });
+
+      let message;
+      const geminiKey = process.env.GEMINI_API_KEY;
+      if (geminiKey && geminiKey !== 'your_gemini_api_key_here') {
+        try {
+          const { GoogleGenerativeAI } = require('@google/generative-ai');
+          const genAI = new GoogleGenerativeAI(geminiKey);
+          const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+          const prompt = `Write a short, friendly SMS notification (max 160 chars) for a customer about this product:
+Product: ${product.name}
+Price: ₹${product.price}
+Category: ${product.category || 'General'}
+Discount Code: ${discountCode}
+Include emojis, product name, price, and the discount code. Keep it engaging and concise.`;
+          const result = await model.generateContent(prompt);
+          message = result.response.text().trim();
+        } catch (e) {
+          console.error('Gemini error:', e.message);
+        }
+      }
+      // Fallback
+      if (!message) {
+        message = `🛍️ SAM Store Deal!\n\n${product.name} for just ₹${product.price.toLocaleString()}!\n\nUse code ${discountCode} for extra savings 🎉\n\nShop now!`;
+      }
+      return sendJson(res, 200, { success: true, message, product: { id: product.id, name: product.name, price: product.price } });
+    }
+
     // ================= SMS DISPATCH API =================
     if (pathname === '/api/sms/send' && method === 'POST') {
       const body = await parseJsonBody(req);

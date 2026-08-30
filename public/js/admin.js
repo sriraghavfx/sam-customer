@@ -328,7 +328,9 @@ async function loadProducts() {
   try {
     const res = await fetch('/api/products');
     const data = await res.json();
-    renderProducts(data.products || []);
+    const products = data.products || [];
+    renderProducts(products);
+    populateNotifProductSelect(products); // feed notification tab
   } catch (e) { console.error(e); }
 }
 
@@ -412,95 +414,169 @@ async function addProduct(e) {
   }
 }
 
-// ===== AI SMS =====
+// ===== NOTIFICATIONS (Product → Customers) =====
+let allProducts_notif = []; // cached for notification tab
+
 function populateSmsSelect(customers) {
-  const sel = document.getElementById('smsCustomerSelect');
-  sel.innerHTML = '<option value="">— Choose a customer —</option>';
-  customers.forEach(c => {
-    sel.innerHTML += `<option value="${c.id}">${c.name} (${c.segment})</option>`;
+  // Fill the single-customer select in Notifications tab
+  const sel = document.getElementById('notifCustomerSelect');
+  if (sel) {
+    sel.innerHTML = '<option value="">— Choose customer —</option>';
+    customers.forEach(c => {
+      sel.innerHTML += `<option value="${c.id}">${c.name} (${c.segment})</option>`;
+    });
+  }
+}
+
+function populateNotifProductSelect(products) {
+  allProducts_notif = products;
+  const sel = document.getElementById('notifProductSelect');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Select a product —</option>';
+  products.forEach(p => {
+    sel.innerHTML += `<option value="${p.id}">${p.name} — ₹${p.price.toLocaleString()}</option>`;
   });
 }
 
-async function quickSMS(customerId) {
-  switchTab('sms');
-  document.getElementById('smsCustomerSelect').value = customerId;
-  await generateAI();
+function onProductSelected() {
+  const sel = document.getElementById('notifProductSelect');
+  const productId = sel.value;
+  const preview = document.getElementById('notifProductPreview');
+  if (!productId) { preview.classList.add('hidden'); return; }
+  const p = allProducts_notif.find(x => String(x.id) === String(productId));
+  if (!p) return;
+  document.getElementById('notifProductImg').src = p.imageUrl || 'https://via.placeholder.com/64?text=P';
+  document.getElementById('notifProductImg').onerror = function() { this.src='https://via.placeholder.com/64?text=P'; };
+  document.getElementById('notifProductName').textContent = p.name;
+  document.getElementById('notifProductCat').textContent = p.category || 'General';
+  document.getElementById('notifProductPrice').textContent = '₹' + p.price.toLocaleString();
+  preview.classList.remove('hidden');
 }
 
-async function generateAI() {
-  const customerId = document.getElementById('smsCustomerSelect').value;
-  if (!customerId) return showToast('Please select a customer first', 'error');
+async function generateNotification() {
+  const productId = document.getElementById('notifProductSelect').value;
+  if (!productId) return showToast('Please select a product first', 'error');
 
-  const btn = document.querySelector('#tab-sms button[onclick="generateAI()"]');
+  const btn = document.getElementById('generateNotifBtn');
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Generating...';
   btn.disabled = true;
 
+  const product = allProducts_notif.find(p => String(p.id) === String(productId));
+  const discount = document.getElementById('notifDiscountCode').value || 'SAVE10';
+
   try {
-    const res = await fetch(`/api/ai/recommend/${customerId}`);
+    // Use AI to generate notification message for this product
+    const res = await fetch('/api/ai/product-notification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, discountCode: discount })
+    });
     const data = await res.json();
-    if (!data.success) throw new Error('AI failed');
-    currentAiRec = data.recommendation;
+    const message = data.message || `🎉 New deal at SAM Store!\n\n${product.name} is now available for just ₹${product.price.toLocaleString()}!\n\nUse code ${discount} for extra savings.\n\nShop now → sam-store.vercel.app`;
 
-    document.getElementById('aiProductName').textContent = currentAiRec.productName;
-    document.getElementById('aiReason').textContent = currentAiRec.reason;
-    document.getElementById('aiDiscount').textContent = currentAiRec.discountCode;
-    document.getElementById('aiConfidence').textContent = `${currentAiRec.confidence || 85}% match`;
-    document.getElementById('aiResultCard').classList.remove('hidden');
+    // Count recipients
+    const target = document.querySelector('input[name="notifTarget"]:checked')?.value || 'segment';
+    let recipientLabel = '';
+    if (target === 'all') recipientLabel = 'All customers';
+    else if (target === 'segment') recipientLabel = document.getElementById('notifSegmentSelect').value + ' segment';
+    else recipientLabel = '1 customer';
 
-    // Update phone mockup
-    document.getElementById('smsPlaceholder').classList.add('hidden');
-    document.getElementById('smsPreviewBubble').classList.remove('hidden');
-    document.getElementById('smsPreviewText').textContent = currentAiRec.smsMessage;
+    document.getElementById('notifResultCard').classList.remove('hidden');
+    document.getElementById('notifMessageEdit').value = message;
+    document.getElementById('notifRecipientCount').textContent = '→ ' + recipientLabel;
+
+    // Update phone preview
+    document.getElementById('notifPlaceholder').classList.add('hidden');
+    document.getElementById('notifPreviewBubble').classList.remove('hidden');
+    document.getElementById('notifPreviewText').textContent = message;
+
   } catch (err) {
-    showToast('AI generation failed: ' + err.message, 'error');
+    // Fallback message if API fails
+    const fallback = `🎉 SAM Ecommerce Store\n\n${product ? product.name : 'New Product'} — Now available!\n₹${product ? product.price.toLocaleString() : ''}\n\nUse code ${discount} for extra savings!\nShop now 🛍️`;
+    document.getElementById('notifResultCard').classList.remove('hidden');
+    document.getElementById('notifMessageEdit').value = fallback;
+    document.getElementById('notifPreviewBubble').classList.remove('hidden');
+    document.getElementById('notifPlaceholder').classList.add('hidden');
+    document.getElementById('notifPreviewText').textContent = fallback;
+    document.getElementById('notifRecipientCount').textContent = '→ ready to send';
   } finally {
-    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Recommendation';
+    btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Notification';
     btn.disabled = false;
   }
 }
 
-async function sendSMS() {
-  if (!currentAiRec) return;
-  const customerId = document.getElementById('smsCustomerSelect').value;
-  const cust = allCustomers.find(c => String(c.id) === String(customerId));
-  if (!cust) return;
+async function sendProductNotification() {
+  const productId = document.getElementById('notifProductSelect').value;
+  const product = allProducts_notif.find(p => String(p.id) === String(productId));
+  if (!product) return showToast('Please select a product first', 'error');
+
+  const message = document.getElementById('notifMessageEdit').value;
+  if (!message.trim()) return showToast('Message cannot be empty', 'error');
+
+  const target = document.querySelector('input[name="notifTarget"]:checked')?.value || 'segment';
+  const discountCode = document.getElementById('notifDiscountCode').value;
+  const btn = document.getElementById('sendNotifBtn');
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Sending...';
+  btn.disabled = true;
+
+  let recipients = [];
+  if (target === 'all') {
+    recipients = allCustomers;
+  } else if (target === 'segment') {
+    const seg = document.getElementById('notifSegmentSelect').value;
+    recipients = allCustomers.filter(c => c.segment === seg);
+  } else {
+    const custId = document.getElementById('notifCustomerSelect').value;
+    const cust = allCustomers.find(c => String(c.id) === String(custId));
+    if (cust) recipients = [cust];
+  }
+
+  if (!recipients.length) {
+    showToast('No customers found for selected target', 'error');
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Notification';
+    btn.disabled = false;
+    return;
+  }
 
   try {
-    await fetch('/api/sms/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        customerId: cust.id,
-        customerName: cust.name,
-        phone: cust.phone,
-        productId: currentAiRec.productId,
-        productName: currentAiRec.productName,
-        message: currentAiRec.smsMessage,
-        discountCode: currentAiRec.discountCode
-      })
-    });
-    showToast(`SMS sent to ${cust.name}!`);
+    let sent = 0;
+    for (const cust of recipients) {
+      await fetch('/api/sms/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerId: cust.id,
+          customerName: cust.name,
+          phone: cust.phone,
+          productId: product.id,
+          productName: product.name,
+          message,
+          discountCode
+        })
+      });
+      sent++;
+    }
+    showToast(`✅ Notification sent to ${sent} customer${sent !== 1 ? 's' : ''}!`);
     loadCampaigns();
+    document.getElementById('notifResultCard').classList.add('hidden');
+    document.getElementById('notifPreviewBubble').classList.add('hidden');
+    document.getElementById('notifPlaceholder').classList.remove('hidden');
   } catch (err) {
     showToast('Send failed: ' + err.message, 'error');
+  } finally {
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Send Notification';
+    btn.disabled = false;
   }
 }
 
-async function sendBulkSMS() {
-  const segment = document.getElementById('bulkSegment').value;
-  if (!confirm(`Send AI SMS to all "${segment}" customers?`)) return;
-  try {
-    const res = await fetch('/api/sms/bulk', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ segment })
-    });
-    const data = await res.json();
-    showToast(`Bulk SMS sent to ${data.count} customers!`);
-    loadCampaigns();
-  } catch (err) {
-    showToast('Bulk SMS failed', 'error');
-  }
+// Keep quickSMS working from customers tab (opens notifications tab)
+async function quickSMS(customerId) {
+  switchTab('sms');
+  // Set single customer target
+  const radio = document.querySelector('input[name="notifTarget"][value="single"]');
+  if (radio) radio.checked = true;
+  const sel = document.getElementById('notifCustomerSelect');
+  if (sel) sel.value = customerId;
 }
 
 // ===== CAMPAIGNS =====
