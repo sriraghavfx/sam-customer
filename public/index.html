@@ -225,7 +225,7 @@
 
         <div id="googleBtnContainer" style="margin-bottom: 16px;"></div>
 
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div id="orDivider" style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
           <div style="flex:1; height:1px; background:#333;"></div>
           <span style="font-size:11px; font-weight:700; color:#555; text-transform:uppercase;">or continue with email</span>
           <div style="flex:1; height:1px; background:#333;"></div>
@@ -242,8 +242,11 @@
             <label class="field-label">Email Address</label>
             <input type="email" id="loginEmail" required placeholder="you@example.com">
           </div>
-          <div>
-            <label class="field-label">Password</label>
+          <div id="passwordFieldContainer">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+              <label class="field-label" style="margin-bottom:0;">Password</label>
+              <button type="button" onclick="setAuthMode('forgot')" style="background:none; border:none; color:#999; font-size:11px; font-weight:700; cursor:pointer; text-decoration:underline;">Forgot Password?</button>
+            </div>
             <input type="password" id="loginPassword" required placeholder="••••••••">
           </div>
           <input type="hidden" id="loginRole">
@@ -382,7 +385,7 @@
       document.getElementById('adminCard').classList.remove('selected');
       document.getElementById('customerCard').classList.remove('selected');
       selectedRole = null;
-      if (isRegisterMode) toggleAuthMode();
+      if (authMode !== 'login') setAuthMode('login');
     }
 
     function browseAsGuest(e) {
@@ -400,11 +403,12 @@
       }
     }
 
-    let isRegisterMode = false;
+    let authMode = 'login'; // 'login' | 'register' | 'forgot'
 
-    function toggleAuthMode() {
-      isRegisterMode = !isRegisterMode;
+    function setAuthMode(mode) {
+      authMode = mode;
       const regFields = document.getElementById('registerFields');
+      const passField = document.getElementById('passwordFieldContainer');
       const title = document.getElementById('loginFormTitle');
       const sub = document.getElementById('loginFormSub');
       const btnText = document.getElementById('loginBtnText');
@@ -412,27 +416,57 @@
       const prompt = document.getElementById('togglePrompt');
       const link = document.getElementById('toggleLink');
       const demoSec = document.getElementById('demoCredentialsSection');
+      const googleBtnContainer = document.getElementById('googleBtnContainer');
+      const orDivider = document.getElementById('orDivider');
       
-      if (isRegisterMode) {
+      document.getElementById('errorMsg').style.display = 'none';
+
+      if (mode === 'register') {
         regFields.style.display = 'flex';
+        passField.style.display = 'block';
         document.getElementById('loginName').required = true;
+        document.getElementById('loginPassword').required = true;
         title.textContent = selectedRole === 'admin' ? 'Admin Registration' : 'Customer Registration';
         sub.textContent = 'Create a new account';
         btnText.textContent = 'Sign Up';
         btnIcon.className = 'fa-solid fa-user-plus';
         prompt.textContent = 'Already have an account?';
         link.textContent = 'Sign In';
+        link.onclick = () => setAuthMode('login');
         demoSec.style.display = 'none';
-      } else {
+        if(googleBtnContainer) googleBtnContainer.style.display = 'block';
+        if(orDivider) orDivider.style.display = 'flex';
+      } else if (mode === 'forgot') {
         regFields.style.display = 'none';
+        passField.style.display = 'none';
         document.getElementById('loginName').required = false;
+        document.getElementById('loginPassword').required = false;
+        title.textContent = 'Reset Password';
+        sub.textContent = 'Enter your email to get a reset link';
+        btnText.textContent = 'Send Reset Link';
+        btnIcon.className = 'fa-solid fa-envelope';
+        prompt.textContent = 'Remember your password?';
+        link.textContent = 'Sign In';
+        link.onclick = () => setAuthMode('login');
+        demoSec.style.display = 'none';
+        if(googleBtnContainer) googleBtnContainer.style.display = 'none';
+        if(orDivider) orDivider.style.display = 'none';
+      } else {
+        // Login mode
+        regFields.style.display = 'none';
+        passField.style.display = 'block';
+        document.getElementById('loginName').required = false;
+        document.getElementById('loginPassword').required = true;
         title.textContent = selectedRole === 'admin' ? 'Admin Sign In' : 'Customer Sign In';
         sub.textContent = selectedRole === 'admin' ? 'Access the admin dashboard' : 'Access the online store';
         btnText.textContent = selectedRole === 'admin' ? 'Enter Dashboard' : 'Enter Store';
         btnIcon.className = 'fa-solid fa-right-to-bracket';
         prompt.textContent = "Don't have an account?";
         link.textContent = 'Create New Account';
+        link.onclick = () => setAuthMode('register');
         demoSec.style.display = 'block';
+        if(googleBtnContainer) googleBtnContainer.style.display = 'block';
+        if(orDivider) orDivider.style.display = 'flex';
       }
     }
 
@@ -444,16 +478,19 @@
       const btn      = document.getElementById('loginBtn');
 
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isRegisterMode ? 'Signing up...' : 'Signing in...'}`;
+      const loadingText = authMode === 'register' ? 'Signing up...' : authMode === 'forgot' ? 'Sending...' : 'Signing in...';
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${loadingText}`;
 
       try {
         let endpoint = '/api/auth/login';
         let payload = { email, password };
 
-        if (isRegisterMode) {
+        if (authMode === 'register') {
           endpoint = '/api/customers';
           payload = { name, email, password };
-          // If we allow admin registration, we'd add role here, but api/customers hardcodes role='customer' right now.
+        } else if (authMode === 'forgot') {
+          endpoint = '/api/auth/forgot-password';
+          payload = { email };
         }
 
         const res  = await fetch(endpoint, {
@@ -464,23 +501,49 @@
         const data = await res.json();
 
         if (data.success) {
-          localStorage.setItem('SAM_user', JSON.stringify(data.user));
-          redirectByRole(data.user.role);
+          if (authMode === 'forgot') {
+             btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Link Sent</span>';
+             showError(data.message || 'If an account exists, a reset link has been sent.', true);
+             setTimeout(() => {
+                setAuthMode('login');
+                btn.disabled = false;
+             }, 3000);
+          } else {
+             localStorage.setItem('SAM_user', JSON.stringify(data.user));
+             redirectByRole(data.user.role);
+          }
         } else {
           showError(data.error || 'Authentication failed. Please try again.');
           btn.disabled = false;
-          btn.innerHTML = `<i class="fa-solid ${isRegisterMode ? 'fa-user-plus' : 'fa-right-to-bracket'}"></i> <span id="loginBtnText">${isRegisterMode ? 'Sign Up' : 'Sign In'}</span>`;
+          resetBtnUI();
         }
       } catch (err) {
         showError('Server error: ' + err.message);
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid ${isRegisterMode ? 'fa-user-plus' : 'fa-right-to-bracket'}"></i> <span id="loginBtnText">${isRegisterMode ? 'Sign Up' : 'Sign In'}</span>`;
+        resetBtnUI();
+      }
+
+      function resetBtnUI() {
+        if(authMode === 'register') btn.innerHTML = `<i class="fa-solid fa-user-plus"></i> <span id="loginBtnText">Sign Up</span>`;
+        else if(authMode === 'forgot') btn.innerHTML = `<i class="fa-solid fa-envelope"></i> <span id="loginBtnText">Send Reset Link</span>`;
+        else btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> <span id="loginBtnText">Sign In</span>`;
       }
     }
 
-    function showError(msg) {
+    function showError(msg, isSuccess = false) {
       const el = document.getElementById('errorMsg');
       el.textContent = msg;
+      
+      if (isSuccess) {
+        el.style.background = '#0a2a1a';
+        el.style.borderColor = '#0f4f2f';
+        el.style.color = '#8fdfaf';
+      } else {
+        el.style.background = '#1a0000';
+        el.style.borderColor = '#400';
+        el.style.color = '#f88';
+      }
+      
       el.style.display = 'block';
     }
   </script>

@@ -81,6 +81,11 @@ module.exports = async (req, res) => {
       return sendJson(res, 401, { success: false, error: 'Invalid email or password' });
     }
 
+    if (pathname === '/api/auth/forgot-password' && method === 'POST') {
+      // Dummy endpoint for prototype: always returns success to prevent email enumeration
+      return sendJson(res, 200, { success: true, message: 'If that email exists, a reset link has been sent.' });
+    }
+
     if (pathname === '/api/auth/google' && method === 'POST') {
       const body = await parseJsonBody(req);
       const { credential } = body;
