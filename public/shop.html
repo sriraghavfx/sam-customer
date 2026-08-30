@@ -10,7 +10,7 @@
       theme: {
         extend: {
           colors: {
-            brand: { 50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca' }
+            brand: { 50:'#f9fafb',100:'#f3f4f6',200:'#e5e7eb',300:'#d1d5db',400:'#9ca3af',500:'#6b7280',600:'#374151',700:'#1f2937',800:'#111827',900:'#030712' }
           }
         }
       }
@@ -31,10 +31,10 @@
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
       <a href="/index.html" class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white text-lg shadow-md">
+        <div class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-white text-lg shadow-md">
           <i class="fa-solid fa-store"></i>
         </div>
-        <span class="font-bold text-lg text-slate-900 tracking-tight">SAM <span class="text-brand-600">Store</span></span>
+        <span class="font-bold text-lg text-slate-900 tracking-tight">SAM <span class="text-gray-900">Store</span></span>
       </a>
 
       <!-- Search -->
@@ -46,26 +46,26 @@
       <!-- Right -->
       <div class="flex items-center gap-3">
         <div id="userGreeting" class="hidden md:flex items-center gap-2 text-sm text-slate-600">
-          <i class="fa-solid fa-user-circle text-brand-500 text-lg"></i>
+          <i class="fa-solid fa-user-circle text-gray-700 text-lg"></i>
           <span id="greetingName"></span>
         </div>
-        <a id="loginBtn" href="/index.html" class="text-sm text-brand-600 hover:underline font-medium">Login</a>
-        <button onclick="toggleCart()" class="relative flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition">
+        <a id="loginBtn" href="/index.html" class="text-sm text-gray-900 hover:underline font-medium">Login</a>
+        <button onclick="toggleCart()" class="relative flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded-xl transition">
           <i class="fa-solid fa-cart-shopping"></i>
           <span>Cart</span>
-          <span id="cartCount" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">0</span>
+          <span id="cartCount" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-black text-white text-xs rounded-full flex items-center justify-center font-bold">0</span>
         </button>
       </div>
     </div>
   </header>
 
   <!-- HERO BANNER -->
-  <section class="bg-gradient-to-r from-brand-700 via-brand-600 to-purple-600 text-white py-16 px-4">
+  <section class="bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white py-16 px-4">
     <div class="max-w-7xl mx-auto text-center">
       <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm font-medium mb-4">🤖 AI-Powered Recommendations</span>
       <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Discover Products<br>You'll <span class="text-yellow-300">Love</span></h1>
       <p class="text-indigo-100 text-lg mb-8 max-w-xl mx-auto">Shop smarter with AI-curated picks, exclusive deals, and personalised offers delivered right to your phone.</p>
-      <button onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})" class="px-8 py-3.5 bg-white text-brand-700 font-bold rounded-2xl shadow-lg hover:bg-indigo-50 transition text-lg">
+      <button onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})" class="px-8 py-3.5 bg-white text-gray-900 font-bold rounded-2xl shadow-lg hover:bg-indigo-50 transition text-lg">
         Shop Now <i class="fa-solid fa-arrow-down ml-2"></i>
       </button>
     </div>
@@ -74,7 +74,7 @@
   <!-- CATEGORY FILTERS -->
   <div class="bg-white border-b border-slate-100 py-3 px-4 sticky top-16 z-20">
     <div class="max-w-7xl mx-auto flex gap-2 overflow-x-auto scrollbar-hide pb-1" id="categoryBar">
-      <button onclick="filterByCategory('')" data-cat="" class="cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-brand-600 text-white transition">All</button>
+      <button onclick="filterByCategory('')" data-cat="" class="cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-black text-white transition">All</button>
     </div>
   </div>
 
@@ -82,7 +82,7 @@
   <main id="products-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-2xl font-bold text-slate-900">All Products</h2>
-      <select id="sortSelect" onchange="sortProducts()" class="px-3 py-2 rounded-xl border border-slate-200 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-500">
+      <select id="sortSelect" onchange="sortProducts()" class="px-3 py-2 rounded-xl border border-slate-200 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-gray-900">
         <option value="default">Sort: Featured</option>
         <option value="price-asc">Price: Low to High</option>
         <option value="price-desc">Price: High to Low</option>
@@ -127,12 +127,12 @@
         <span>Subtotal</span><span id="cartSubtotal" class="font-semibold text-slate-900"></span>
       </div>
       <div class="flex justify-between text-sm text-slate-600">
-        <span>Shipping</span><span class="text-green-600 font-medium">FREE</span>
+        <span>Shipping</span><span class="text-gray-600 font-medium">FREE</span>
       </div>
       <div class="flex justify-between font-bold text-slate-900 text-base border-t pt-3">
         <span>Total</span><span id="cartTotal"></span>
       </div>
-      <button onclick="placeOrder()" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-2xl transition flex items-center justify-center gap-2 text-base">
+      <button onclick="placeOrder()" class="w-full py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-2xl transition flex items-center justify-center gap-2 text-base">
         <i class="fa-solid fa-bag-shopping"></i> Place Order
       </button>
     </div>
@@ -141,12 +141,12 @@
   <!-- Order Success Modal -->
   <div id="orderModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center">
-      <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5">
-        <i class="fa-solid fa-check text-green-500 text-3xl"></i>
+      <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-5">
+        <i class="fa-solid fa-check text-gray-900 text-3xl"></i>
       </div>
       <h2 class="text-2xl font-bold text-slate-900 mb-2">Order Placed!</h2>
       <p id="orderSuccessMsg" class="text-slate-500 text-sm mb-6">Your order has been received. Keep an eye on your phone for AI deal alerts!</p>
-      <button onclick="document.getElementById('orderModal').classList.add('hidden')" class="w-full py-3 bg-brand-600 text-white font-bold rounded-2xl hover:bg-brand-700 transition">Continue Shopping</button>
+      <button onclick="document.getElementById('orderModal').classList.add('hidden')" class="w-full py-3 bg-black text-white font-bold rounded-2xl hover:bg-gray-900 transition">Continue Shopping</button>
     </div>
   </div>
 

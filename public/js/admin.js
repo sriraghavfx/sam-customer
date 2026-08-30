@@ -70,7 +70,7 @@ function renderKPIs(m) {
     { label: 'Total Revenue', value: `₹${(m.totalRevenue || 0).toLocaleString()}`, icon: 'fa-indian-rupee-sign', color: 'text-green-500', bg: 'bg-green-50' },
     { label: 'Total Orders', value: m.totalOrders || 0, icon: 'fa-bag-shopping', color: 'text-blue-500', bg: 'bg-blue-50' },
     { label: 'Total Customers', value: m.totalCustomers || 0, icon: 'fa-users', color: 'text-purple-500', bg: 'bg-purple-50' },
-    { label: 'Avg Order Value', value: `₹${(m.avgOrderValue || 0).toFixed(0)}`, icon: 'fa-chart-line', color: 'text-brand-500', bg: 'bg-brand-50' },
+    { label: 'Avg Order Value', value: `₹${(m.avgOrderValue || 0).toFixed(0)}`, icon: 'fa-chart-line', color: 'text-gray-700', bg: 'bg-gray-50' },
   ];
   document.getElementById('kpiCards').innerHTML = cards.map(c => `
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
@@ -96,11 +96,11 @@ function renderCharts(m) {
       datasets: [{
         label: 'Revenue (₹)',
         data: (m.revenueByMonth || []).map(r => r.revenue),
-        borderColor: '#4f46e5',
-        backgroundColor: 'rgba(79,70,229,0.08)',
+        borderColor: '#111827',
+        backgroundColor: 'rgba(0,0,0,0.05)',
         borderWidth: 2.5,
         pointRadius: 4,
-        pointBackgroundColor: '#4f46e5',
+        pointBackgroundColor: '#111827',
         fill: true,
         tension: 0.4
       }]
@@ -140,12 +140,12 @@ async function loadCustomers() {
 
 function renderCustomers(customers) {
   const segColors = {
-    Champions: 'bg-green-100 text-green-700',
-    'Loyal Customers': 'bg-blue-100 text-blue-700',
-    'New Customers': 'bg-purple-100 text-purple-700',
-    'At-Risk': 'bg-amber-100 text-amber-700',
-    'Lost Customers': 'bg-red-100 text-red-700',
-    'Potential Loyalist': 'bg-cyan-100 text-cyan-700',
+    Champions: 'bg-gray-900 text-white',
+    'Loyal Customers': 'bg-gray-700 text-white',
+    'New Customers': 'bg-gray-500 text-white',
+    'At-Risk': 'bg-amber-100 text-gray-700',
+    'Lost Customers': 'bg-black text-white',
+    'Potential Loyalist': 'bg-gray-300 text-gray-900',
   };
   if (!customers.length) {
     document.getElementById('customersTable').innerHTML = '<tr><td colspan="6" class="text-center py-12 text-slate-400">No customers found</td></tr>';
@@ -169,7 +169,7 @@ function renderCustomers(customers) {
           <button onclick="viewPurchases(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-medium rounded-lg transition flex items-center gap-1">
             <i class="fa-solid fa-bag-shopping"></i> Purchases
           </button>
-          <button onclick="quickSMS(${c.id})" class="px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
+          <button onclick="quickSMS(${c.id})" class="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-900 text-xs font-medium rounded-lg transition flex items-center gap-1">
             <i class="fa-solid fa-comment-sms"></i> SMS
           </button>
           <button onclick="deleteCustomer(${c.id}, '${c.name.replace(/'/g, '')}')" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-medium rounded-lg transition flex items-center gap-1">
@@ -297,7 +297,7 @@ async function viewPurchases(customerId, customerName) {
           <div class="font-semibold text-slate-900 text-sm truncate">${t.productName}</div>
           <div class="text-xs text-slate-400 mt-0.5">${t.category || 'General'}</div>
           <div class="flex items-center gap-3 mt-1.5">
-            <span class="text-brand-600 font-bold text-sm">₹${(t.amount || 0).toLocaleString()}</span>
+            <span class="text-gray-900 font-bold text-sm">₹${(t.amount || 0).toLocaleString()}</span>
             <span class="text-xs text-slate-400">Qty: ${t.qty || 1}</span>
             <span class="text-xs text-slate-400">${t.date ? new Date(t.date).toLocaleDateString('en-IN') : '—'}</span>
           </div>
@@ -348,7 +348,7 @@ function renderProducts(products) {
         <div class="text-xs text-slate-400 mb-1">${p.category || 'General'}</div>
         <h3 class="font-semibold text-slate-900 text-sm truncate">${p.name}</h3>
         <div class="flex items-center justify-between mt-2">
-          <span class="text-brand-600 font-bold">₹${(p.price || 0).toLocaleString()}</span>
+          <span class="text-gray-900 font-bold">₹${(p.price || 0).toLocaleString()}</span>
           <span class="text-xs text-slate-400">${p.stock} in stock</span>
         </div>
       </div>

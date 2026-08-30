@@ -59,7 +59,7 @@ function buildCategoryBar() {
     const btn = document.createElement('button');
     btn.onclick = () => filterByCategory(cat);
     btn.setAttribute('data-cat', cat);
-    btn.className = 'cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-brand-100 hover:text-brand-700 transition';
+    btn.className = 'cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-gray-100 hover:text-gray-900 transition';
     btn.textContent = cat;
     bar.appendChild(btn);
   });
@@ -70,8 +70,8 @@ function filterByCategory(cat) {
   document.querySelectorAll('.cat-btn').forEach(b => {
     b.className = 'cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium ' +
       (b.getAttribute('data-cat') === cat
-        ? 'bg-brand-600 text-white'
-        : 'bg-slate-100 text-slate-600 hover:bg-brand-100 hover:text-brand-700') +
+        ? 'bg-gray-800 text-white'
+        : 'bg-slate-100 text-slate-600 hover:bg-gray-100 hover:text-gray-900') +
       ' transition';
   });
   applyFilters();
@@ -120,19 +120,19 @@ function renderProducts(products) {
           <img src="${p.imageUrl || 'https://via.placeholder.com/300x176?text=No+Image'}"
             alt="${p.name}" class="w-full h-full object-cover"
             onerror="this.src='https://via.placeholder.com/300x176?text=No+Image'">
-          ${discount ? `<span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">${discount}% OFF</span>` : ''}
-          ${p.stock <= 5 && p.stock > 0 ? `<span class="absolute top-2 right-2 bg-amber-400 text-amber-900 text-xs font-bold px-2 py-0.5 rounded-full">Only ${p.stock} left!</span>` : ''}
+          ${discount ? `<span class="absolute top-2 left-2 bg-black text-white text-xs font-bold px-2 py-0.5 rounded-full">${discount}% OFF</span>` : ''}
+          ${p.stock <= 5 && p.stock > 0 ? `<span class="absolute top-2 right-2 bg-gray-400 text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full">Only ${p.stock} left!</span>` : ''}
           ${p.stock === 0 ? `<div class="absolute inset-0 bg-white/70 flex items-center justify-center"><span class="text-slate-500 font-bold text-sm">Out of Stock</span></div>` : ''}
         </div>
         <div class="p-3">
           <div class="text-xs text-slate-400 mb-1">${p.category || 'General'}</div>
           <h3 class="font-semibold text-slate-900 text-sm leading-tight mb-2 line-clamp-2">${p.name}</h3>
           <div class="flex items-center gap-2 mb-3">
-            <span class="text-brand-600 font-bold text-base">₹${p.price.toLocaleString()}</span>
+            <span class="text-gray-900 font-bold text-base">₹${p.price.toLocaleString()}</span>
             ${p.originalPrice ? `<span class="text-xs text-slate-400 line-through">₹${p.originalPrice.toLocaleString()}</span>` : ''}
           </div>
           <button onclick="event.stopPropagation(); addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}
-            class="w-full py-2 ${p.stock === 0 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700 text-white'} text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1">
+            class="w-full py-2 ${p.stock === 0 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-900 text-white'} text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1">
             <i class="fa-solid fa-cart-plus"></i> Add to Cart
           </button>
         </div>
@@ -210,7 +210,7 @@ function updateCartUI() {
         onerror="this.src='https://via.placeholder.com/60?text=P'">
       <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-slate-900 truncate">${item.name}</p>
-        <p class="text-brand-600 font-bold text-sm">₹${item.price.toLocaleString()}</p>
+        <p class="text-gray-900 font-bold text-sm">₹${item.price.toLocaleString()}</p>
       </div>
       <div class="flex items-center gap-2">
         <button onclick="changeQty(${item.id}, -1)" class="w-7 h-7 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-red-50 hover:text-red-500 transition text-sm font-bold">-</button>

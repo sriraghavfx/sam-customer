@@ -11,7 +11,7 @@
       theme: {
         extend: {
           colors: {
-            brand: { 50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' }
+            brand: { 50:'#f9fafb',100:'#f3f4f6',200:'#e5e7eb',300:'#d1d5db',400:'#9ca3af',500:'#6b7280',600:'#374151',700:'#1f2937',800:'#111827',900:'#030712' }
           }
         }
       }
@@ -20,10 +20,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .phone-mockup { width: 310px; height: 490px; border: 10px solid #1e293b; border-radius: 36px; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.3); }
+    .phone-mockup { width: 310px; height: 490px; border: 10px solid #111827; border-radius: 36px; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.4); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .nav-link.active { color: #4f46e5; background: #eef2ff; }
+    .nav-link.active { color: #fff; background: #111827; }
     .segment-chip { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
   </style>
 </head>
@@ -33,14 +33,14 @@
   <div class="flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-slate-900 text-white flex flex-col fixed inset-y-0 left-0 z-40 shadow-2xl">
+    <aside class="w-64 bg-black text-white flex flex-col fixed inset-y-0 left-0 z-40 shadow-2xl">
       <!-- Logo -->
       <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-700/50">
-        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white text-lg shadow-lg">
+        <div class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-white text-lg shadow-lg">
           <i class="fa-solid fa-brain"></i>
         </div>
         <div>
-          <span class="font-bold text-lg tracking-tight">SAM <span class="text-brand-400">AI</span></span>
+          <span class="font-bold text-lg tracking-tight">SAM <span class="text-gray-600">AI</span></span>
           <div class="text-xs text-slate-400">Admin Portal</div>
         </div>
       </div>
@@ -67,7 +67,7 @@
       <!-- User + Logout -->
       <div class="px-4 py-4 border-t border-slate-700/50">
         <div class="flex items-center gap-3 mb-3">
-          <div class="w-9 h-9 rounded-full bg-brand-600 flex items-center justify-center text-sm font-bold">
+          <div class="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center text-sm font-bold">
             <i class="fa-solid fa-user-tie"></i>
           </div>
           <div>
@@ -120,7 +120,7 @@
             <p class="text-slate-500 text-sm">RFM Segmentation – Recency, Frequency, Monetary</p>
           </div>
           <div class="flex gap-2">
-            <select id="segmentFilter" onchange="filterCustomers()" class="px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <select id="segmentFilter" onchange="filterCustomers()" class="px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900">
               <option value="">All Segments</option>
               <option>Champions</option>
               <option>Loyal Customers</option>
@@ -128,7 +128,7 @@
               <option>Lost Customers</option>
               <option>New Customers</option>
             </select>
-            <button onclick="document.getElementById('addCustomerModal').classList.remove('hidden')" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition flex items-center gap-2">
+            <button onclick="document.getElementById('addCustomerModal').classList.remove('hidden')" class="px-5 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded-xl transition flex items-center gap-2">
               <i class="fa-solid fa-user-plus"></i> Add Customer
             </button>
           </div>
@@ -161,7 +161,7 @@
             <h1 class="text-2xl font-bold text-slate-900">Product Management</h1>
             <p class="text-slate-500 text-sm">Add and manage your store inventory</p>
           </div>
-          <button onclick="document.getElementById('addProductModal').classList.remove('hidden')" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition flex items-center gap-2">
+          <button onclick="document.getElementById('addProductModal').classList.remove('hidden')" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded-xl transition flex items-center gap-2">
             <i class="fa-solid fa-plus"></i> Add Product
           </button>
         </div>
@@ -188,10 +188,10 @@
             <!-- Step 1: Choose Product -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
               <div class="flex items-center gap-2 mb-4">
-                <span class="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+                <span class="w-6 h-6 rounded-full bg-gray-800 text-white text-xs font-bold flex items-center justify-center">1</span>
                 <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Choose Product to Promote</span>
               </div>
-              <select id="notifProductSelect" onchange="onProductSelected()" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-sm">
+              <select id="notifProductSelect" onchange="onProductSelected()" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-gray-900 outline-none text-sm">
                 <option value="">— Select a product —</option>
               </select>
               <!-- Product preview card -->
@@ -200,7 +200,7 @@
                 <div class="flex-1 min-w-0">
                   <div class="font-semibold text-slate-900 text-sm" id="notifProductName"></div>
                   <div class="text-xs text-slate-400" id="notifProductCat"></div>
-                  <div class="text-brand-600 font-bold mt-1" id="notifProductPrice"></div>
+                  <div class="text-gray-900 font-bold mt-1" id="notifProductPrice"></div>
                 </div>
               </div>
             </div>
@@ -208,22 +208,22 @@
             <!-- Step 2: Choose Recipients -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
               <div class="flex items-center gap-2 mb-4">
-                <span class="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center">2</span>
+                <span class="w-6 h-6 rounded-full bg-gray-800 text-white text-xs font-bold flex items-center justify-center">2</span>
                 <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Choose Recipients</span>
               </div>
               <div class="space-y-2">
                 <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
-                  <input type="radio" name="notifTarget" value="all" class="accent-brand-600"> 
+                  <input type="radio" name="notifTarget" value="all" class="accent-gray-900"> 
                   <div><div class="text-sm font-medium text-slate-800">All Customers</div><div class="text-xs text-slate-400">Send to everyone in your store</div></div>
                 </label>
                 <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
-                  <input type="radio" name="notifTarget" value="segment" class="accent-brand-600" checked>
+                  <input type="radio" name="notifTarget" value="segment" class="accent-gray-900" checked>
                   <div class="flex-1">
                     <div class="text-sm font-medium text-slate-800">By Segment</div>
                     <div class="text-xs text-slate-400">Target a specific customer group</div>
                   </div>
                 </label>
-                <select id="notifSegmentSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none ml-0">
+                <select id="notifSegmentSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none ml-0">
                   <option value="Champions">Champions</option>
                   <option value="Loyal Customers">Loyal Customers</option>
                   <option value="At-Risk" selected>At-Risk</option>
@@ -231,13 +231,13 @@
                   <option value="New Customers">New Customers</option>
                 </select>
                 <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
-                  <input type="radio" name="notifTarget" value="single" class="accent-brand-600">
+                  <input type="radio" name="notifTarget" value="single" class="accent-gray-900">
                   <div class="flex-1">
                     <div class="text-sm font-medium text-slate-800">Single Customer</div>
                     <div class="text-xs text-slate-400">Pick one specific customer</div>
                   </div>
                 </label>
-                <select id="notifCustomerSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                <select id="notifCustomerSelect" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
                   <option value="">— Choose customer —</option>
                 </select>
               </div>
@@ -246,31 +246,31 @@
             <!-- Step 3: Generate & Send -->
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
               <div class="flex items-center gap-2 mb-4">
-                <span class="w-6 h-6 rounded-full bg-brand-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+                <span class="w-6 h-6 rounded-full bg-gray-800 text-white text-xs font-bold flex items-center justify-center">3</span>
                 <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">Generate & Send</span>
               </div>
               <div class="mb-3">
                 <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Discount Code (optional)</label>
                 <input type="text" id="notifDiscountCode" placeholder="e.g. SALE20" value="SAVE10"
-                  class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                  class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
               </div>
               <button onclick="generateNotification()" id="generateNotifBtn"
-                class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+                class="w-full py-3 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
                 <i class="fa-solid fa-wand-magic-sparkles"></i> Generate AI Notification
               </button>
             </div>
 
             <!-- AI Result Card -->
-            <div id="notifResultCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-brand-100">
+            <div id="notifResultCard" class="hidden bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
               <div class="flex items-center gap-2 mb-4">
-                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white text-sm"><i class="fa-solid fa-robot"></i></div>
+                <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-white text-sm"><i class="fa-solid fa-robot"></i></div>
                 <span class="font-semibold text-slate-800">AI Notification Message</span>
-                <span id="notifRecipientCount" class="ml-auto text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium"></span>
+                <span id="notifRecipientCount" class="ml-auto text-xs px-2 py-0.5 bg-gray-100 text-gray-900 rounded-full font-medium"></span>
               </div>
               <textarea id="notifMessageEdit" rows="4"
-                class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none resize-none mb-4"></textarea>
+                class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm text-slate-700 focus:ring-2 focus:ring-gray-900 outline-none resize-none mb-4"></textarea>
               <button onclick="sendProductNotification()" id="sendNotifBtn"
-                class="w-full py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+                class="w-full py-3 bg-gray-900 hover:bg-black text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
                 <i class="fa-solid fa-paper-plane"></i> Send Notification
               </button>
             </div>
@@ -279,14 +279,14 @@
           <!-- RIGHT: Phone mockup -->
           <div class="flex justify-center sticky top-24">
             <div class="phone-mockup bg-slate-100 flex flex-col overflow-hidden">
-              <div class="bg-slate-800 text-white text-center text-xs py-2 font-medium tracking-wide">
+              <div class="bg-black text-white text-center text-xs py-2 font-medium tracking-wide">
                 <i class="fa-solid fa-bell mr-1"></i> Notifications
               </div>
               <div class="flex-1 p-4 overflow-y-auto">
                 <div class="text-center text-xs text-slate-400 mb-4">Today</div>
                 <div id="notifPreviewBubble" class="hidden space-y-1">
                   <div class="text-xs text-slate-400 font-medium mb-1">SAM Ecommerce Store</div>
-                  <div class="bg-indigo-600 text-white text-xs rounded-2xl rounded-tl-sm px-4 py-3 max-w-[90%] shadow-sm leading-relaxed" id="notifPreviewText"></div>
+                  <div class="bg-gray-900 text-white text-xs rounded-2xl rounded-tl-sm px-4 py-3 max-w-[90%] shadow-sm leading-relaxed" id="notifPreviewText"></div>
                   <div class="text-xs text-slate-400 mt-1">Delivered ✓✓</div>
                 </div>
                 <div id="notifPlaceholder" class="flex flex-col items-center justify-center h-full text-slate-400 text-xs text-center">
@@ -341,35 +341,35 @@
         <div class="grid grid-cols-2 gap-4">
           <div class="col-span-2">
             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Product Name</label>
-            <input type="text" name="name" required placeholder="e.g. Wireless Headphones" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            <input type="text" name="name" required placeholder="e.g. Wireless Headphones" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Price (₹)</label>
-            <input type="number" name="price" required min="0" step="0.01" placeholder="999" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            <input type="number" name="price" required min="0" step="0.01" placeholder="999" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Stock</label>
-            <input type="number" name="stock" required min="0" placeholder="100" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            <input type="number" name="stock" required min="0" placeholder="100" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Category</label>
-            <input type="text" name="category" placeholder="Electronics" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            <input type="text" name="category" placeholder="Electronics" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Tags (comma-sep)</label>
-            <input type="text" name="tags" placeholder="new, sale, popular" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            <input type="text" name="tags" placeholder="new, sale, popular" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
           </div>
           <div class="col-span-2">
             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Description</label>
-            <textarea name="description" rows="2" placeholder="Short product description…" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none resize-none"></textarea>
+            <textarea name="description" rows="2" placeholder="Short product description…" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none resize-none"></textarea>
           </div>
           <div class="col-span-2">
             <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Product Image</label>
-            <input type="file" name="image" accept="image/*" onchange="previewImage(event)" class="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-brand-50 file:text-brand-700 file:font-medium hover:file:bg-brand-100">
+            <input type="file" name="image" accept="image/*" onchange="previewImage(event)" class="w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-gray-50 file:text-gray-900 file:font-medium hover:file:bg-gray-100">
             <img id="imagePreview" src="" alt="" class="mt-2 rounded-xl h-24 object-cover hidden">
           </div>
         </div>
-        <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition">
+        <button type="submit" class="w-full py-3 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl transition">
           <i class="fa-solid fa-plus mr-2"></i> Add Product
         </button>
       </form>
@@ -383,7 +383,7 @@
         <i class="fa-solid fa-xmark"></i>
       </button>
       <div class="flex items-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center text-brand-600 text-lg">
+        <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-900 text-lg">
           <i class="fa-solid fa-user-plus"></i>
         </div>
         <h2 class="text-xl font-bold text-slate-900">Add New Customer</h2>
@@ -392,25 +392,25 @@
         <div>
           <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Full Name *</label>
           <input type="text" name="name" required placeholder="e.g. Ravi Kumar"
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
         </div>
         <div>
           <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Email Address *</label>
           <input type="email" name="email" required placeholder="ravi@email.com"
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
         </div>
         <div>
           <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Phone Number</label>
           <input type="tel" name="phone" placeholder="+91 98765 43210"
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
         </div>
         <div>
           <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">Password *</label>
           <input type="password" name="password" required placeholder="Minimum 6 characters"
-            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-gray-900 outline-none">
         </div>
         <div id="addCustomerError" class="hidden text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg"></div>
-        <button type="submit" id="addCustomerBtn" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+        <button type="submit" id="addCustomerBtn" class="w-full py-3 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
           <i class="fa-solid fa-user-plus"></i> Add Customer
         </button>
       </form>
@@ -418,7 +418,7 @@
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-sm font-medium flex items-center gap-3 z-50 transition-all">
+  <div id="toast" class="hidden fixed bottom-6 right-6 bg-black text-white px-5 py-3 rounded-2xl shadow-2xl text-sm font-medium flex items-center gap-3 z-50 transition-all">
     <i id="toastIcon" class="fa-solid fa-check-circle text-green-400"></i>
     <span id="toastMsg"></span>
   </div>
@@ -438,7 +438,7 @@
     <!-- Summary Stats -->
     <div class="grid grid-cols-3 gap-4 px-6 py-4 border-b border-slate-100 bg-white">
       <div class="text-center">
-        <div class="text-2xl font-bold text-brand-600" id="pTotalSpent">—</div>
+        <div class="text-2xl font-bold text-gray-900" id="pTotalSpent">—</div>
         <div class="text-xs text-slate-500 mt-0.5">Total Spent</div>
       </div>
       <div class="text-center border-x border-slate-100">
