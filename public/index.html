@@ -5,130 +5,255 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SAM Ecommerce Store – Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            brand: { 50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' }
-          }
-        }
-      }
-    }
-  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4f46e5 100%); }
-    .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.15); }
-    .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
-    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+    * { box-sizing: border-box; }
+    body {
+      background: #000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* Subtle grid pattern overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glow accents */
+    .glow-top    { position:fixed; top:-120px; left:50%; transform:translateX(-50%); width:500px; height:300px; background:radial-gradient(ellipse, rgba(255,255,255,0.07) 0%, transparent 70%); pointer-events:none; z-index:0; }
+    .glow-bottom { position:fixed; bottom:-100px; right:-60px; width:400px; height:300px; background:radial-gradient(ellipse, rgba(255,255,255,0.05) 0%, transparent 70%); pointer-events:none; z-index:0; }
+
+    .card {
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 20px;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .card:hover {
+      border-color: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 0 0 1px #fff, 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .card.selected { border-color: #fff; box-shadow: 0 0 0 1px #fff; }
+
+    .form-card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 20px;
+    }
+
+    input[type="email"], input[type="password"] {
+      background: #000;
+      border: 1px solid #333;
+      color: #fff;
+      border-radius: 12px;
+      padding: 12px 16px;
+      width: 100%;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #fff; }
+    input::placeholder { color: #555; }
+
+    .btn-white {
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 700;
+      font-size: 14px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-white:hover { background: #e5e5e5; }
+    .btn-white:active { transform: scale(0.98); }
+    .btn-white:disabled { background: #555; color: #999; cursor: not-allowed; }
+
+    .btn-outline {
+      background: transparent;
+      color: #aaa;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-size: 14px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-outline:hover { border-color: #fff; color: #fff; }
+
+    .btn-ghost {
+      background: #1a1a1a;
+      color: #888;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 10px 20px;
+      font-size: 13px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { background: #222; color: #fff; }
+
+    .divider { border: none; border-top: 1px solid #222; margin: 20px 0; }
+
+    .check-icon { color: #fff; }
+    .feature-item { color: #666; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+    .feature-item i { color: #fff; font-size: 11px; }
+
+    label.field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #555; display: block; margin-bottom: 6px; }
+
+    .error-box { background: #1a0000; border: 1px solid #400; color: #f88; border-radius: 12px; padding: 10px 16px; font-size: 13px; text-align: center; }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-  <!-- Decorative blobs -->
-  <div class="fixed top-[-80px] left-[-80px] w-72 h-72 bg-indigo-400 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
-  <div class="fixed bottom-[-80px] right-[-80px] w-96 h-96 bg-purple-500 rounded-full opacity-20 blur-3xl pointer-events-none"></div>
+  <div class="glow-top"></div>
+  <div class="glow-bottom"></div>
 
-  <div class="w-full max-w-4xl z-10">
+  <div style="width:100%; max-width:880px; position:relative; z-index:1;">
 
     <!-- Header -->
-    <div class="text-center mb-10">
-      <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/20 glass text-white text-3xl mb-5 shadow-xl">
+    <div style="text-align:center; margin-bottom:40px;">
+      <div style="display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; background:#111; border:1px solid #333; border-radius:18px; font-size:24px; color:#fff; margin-bottom:20px; box-shadow:0 0 30px rgba(255,255,255,0.05);">
         <i class="fa-solid fa-store"></i>
       </div>
-      <h1 class="text-4xl font-extrabold text-white tracking-tight">SAM <span class="text-indigo-300">AI</span></h1>
-      <p class="text-indigo-200 mt-2 text-base">AI-Powered Retail Analytics & Smart E-Commerce</p>
+      <h1 style="font-size:2.5rem; font-weight:900; color:#fff; letter-spacing:-0.03em; margin:0;">
+        SAM <span style="color:#555;">AI</span>
+      </h1>
+      <p style="color:#555; margin-top:8px; font-size:14px;">AI-Powered Retail Analytics & Smart E-Commerce</p>
     </div>
 
-    <!-- Error message -->
-    <div id="errorMsg" class="hidden max-w-md mx-auto mb-4 px-4 py-3 rounded-xl bg-black/20 border border-red-400/40 text-red-200 text-sm text-center"></div>
+    <!-- Error Message -->
+    <div id="errorMsg" class="error-box" style="display:none; max-width:440px; margin:0 auto 20px;"></div>
 
     <!-- Role Cards -->
-    <div class="grid md:grid-cols-2 gap-6 mb-8">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px;" id="roleCards">
 
       <!-- Admin Card -->
-      <div class="glass rounded-3xl p-8 card-hover cursor-pointer" onclick="showLoginForm('admin')">
-        <div class="flex items-center gap-4 mb-5">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-500/30 flex items-center justify-center text-indigo-200 text-2xl">
+      <div class="card" id="adminCard" onclick="showLoginForm('admin')" style="padding:28px;">
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+          <div style="width:48px; height:48px; background:#1a1a1a; border:1px solid #333; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff;">
             <i class="fa-solid fa-chart-line"></i>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-white">Shop Owner</h2>
-            <p class="text-indigo-200 text-sm">Admin Dashboard</p>
+            <div style="font-size:17px; font-weight:800; color:#fff;">Shop Owner</div>
+            <div style="font-size:12px; color:#555; margin-top:2px;">Admin Dashboard</div>
           </div>
         </div>
-        <ul class="space-y-2 text-indigo-100 text-sm mb-6">
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Customer Analytics & RFM</li>
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>AI Product Recommendations</li>
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>SMS Marketing Campaigns</li>
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Product & Inventory Management</li>
+        <ul style="list-style:none; padding:0; margin:0 0 22px 0; display:flex; flex-direction:column; gap:10px;">
+          <li class="feature-item"><i class="fa-solid fa-check"></i> Customer Analytics & RFM</li>
+          <li class="feature-item"><i class="fa-solid fa-check"></i> AI Product Recommendations</li>
+          <li class="feature-item"><i class="fa-solid fa-check"></i> Product Notifications & SMS</li>
+          <li class="feature-item"><i class="fa-solid fa-check"></i> Inventory Management</li>
         </ul>
-        <button class="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+        <button class="btn-white" onclick="showLoginForm('admin')">
           <i class="fa-solid fa-right-to-bracket"></i> Login as Admin
         </button>
       </div>
 
       <!-- Customer Card -->
-      <div class="glass rounded-3xl p-8 card-hover cursor-pointer" onclick="showLoginForm('customer')">
-        <div class="flex items-center gap-4 mb-5">
-          <div class="w-14 h-14 rounded-2xl bg-purple-500/30 flex items-center justify-center text-purple-200 text-2xl">
+      <div class="card" id="customerCard" onclick="showLoginForm('customer')" style="padding:28px;">
+        <div style="display:flex; align-items:center; gap:14px; margin-bottom:20px;">
+          <div style="width:48px; height:48px; background:#1a1a1a; border:1px solid #333; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff;">
             <i class="fa-solid fa-bag-shopping"></i>
           </div>
           <div>
-            <h2 class="text-xl font-bold text-white">Customer</h2>
-            <p class="text-purple-200 text-sm">Online Store</p>
+            <div style="font-size:17px; font-weight:800; color:#fff;">Customer</div>
+            <div style="font-size:12px; color:#555; margin-top:2px;">Online Store</div>
           </div>
         </div>
-        <ul class="space-y-2 text-purple-100 text-sm mb-6">
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Browse All Products</li>
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Add to Cart & Checkout</li>
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>AI-Recommended Products</li>
-          <li><i class="fa-solid fa-check text-green-400 mr-2"></i>Order History Tracking</li>
+        <ul style="list-style:none; padding:0; margin:0 0 22px 0; display:flex; flex-direction:column; gap:10px;">
+          <li class="feature-item"><i class="fa-solid fa-check"></i> Browse All Products</li>
+          <li class="feature-item"><i class="fa-solid fa-check"></i> Add to Cart & Checkout</li>
+          <li class="feature-item"><i class="fa-solid fa-check"></i> AI-Recommended Products</li>
+          <li class="feature-item"><i class="fa-solid fa-check"></i> Order History Tracking</li>
         </ul>
-        <div class="space-y-2">
-          <button onclick="browseAsGuest(event)" class="w-full py-2.5 bg-purple-500/30 hover:bg-purple-500/50 text-white font-medium rounded-xl transition flex items-center justify-center gap-2 border border-purple-400/30">
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="btn-outline" onclick="browseAsGuest(event)">
             <i class="fa-solid fa-eye"></i> Browse as Guest
           </button>
-          <button class="w-full py-2.5 bg-purple-500 hover:bg-purple-400 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
+          <button class="btn-white" onclick="showLoginForm('customer')">
             <i class="fa-solid fa-right-to-bracket"></i> Login as Customer
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Login Form (shown after role selected) -->
-    <div id="loginFormContainer" class="hidden max-w-md mx-auto">
-      <div class="glass rounded-3xl p-8">
-        <div class="flex items-center gap-3 mb-6">
-          <button onclick="hideLoginForm()" class="text-indigo-300 hover:text-white transition">
-            <i class="fa-solid fa-arrow-left text-lg"></i>
+    <!-- Login Form -->
+    <div id="loginFormContainer" style="display:none; max-width:440px; margin:0 auto;">
+      <div class="form-card" style="padding:32px;">
+
+        <!-- Back + Title -->
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:28px;">
+          <button onclick="hideLoginForm()" style="background:none; border:none; color:#555; cursor:pointer; font-size:18px; padding:0; transition:color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">
+            <i class="fa-solid fa-arrow-left"></i>
           </button>
-          <h3 id="loginFormTitle" class="text-white text-lg font-bold">Sign In</h3>
-        </div>
-        <form onsubmit="handleLogin(event)" class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">Email Address</label>
-            <input type="email" id="loginEmail" required placeholder="you@example.com"
-              class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-400 outline-none text-sm">
+            <div id="loginFormTitle" style="font-size:18px; font-weight:800; color:#fff;">Sign In</div>
+            <div id="loginFormSub" style="font-size:12px; color:#555; margin-top:2px;">Enter your credentials</div>
+          </div>
+        </div>
+
+        <form onsubmit="handleLogin(event)" style="display:flex; flex-direction:column; gap:16px;">
+          <div>
+            <label class="field-label">Email Address</label>
+            <input type="email" id="loginEmail" required placeholder="you@example.com">
           </div>
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-indigo-200 mb-1">Password</label>
-            <input type="password" id="loginPassword" required placeholder="••••••••"
-              class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-indigo-300 focus:ring-2 focus:ring-indigo-400 outline-none text-sm">
+            <label class="field-label">Password</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••">
           </div>
           <input type="hidden" id="loginRole">
-          <button type="submit" id="loginBtn" class="w-full py-3 bg-indigo-500 hover:bg-indigo-400 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-right-to-bracket"></i> <span id="loginBtnText">Sign In</span>
+          <button type="submit" id="loginBtn" class="btn-white" style="margin-top:4px;">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span id="loginBtnText">Sign In</span>
           </button>
         </form>
-        <div class="mt-4 pt-4 border-t border-white/10">
-          <p class="text-indigo-300 text-xs text-center mb-2">Demo Credentials</p>
-          <button onclick="quickFill()" class="w-full py-2 bg-white/10 hover:bg-white/20 text-indigo-100 text-sm rounded-xl transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-bolt text-yellow-400"></i> <span id="quickFillLabel">Fill Demo Credentials</span>
-          </button>
+
+        <hr class="divider">
+
+        <div style="text-align:center; margin-bottom:10px;">
+          <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#444;">Demo Credentials</span>
         </div>
+        <button onclick="quickFill()" class="btn-ghost">
+          <i class="fa-solid fa-bolt" style="color:#fff;"></i>
+          <span id="quickFillLabel">Fill Demo Credentials</span>
+        </button>
       </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="text-align:center; margin-top:36px;">
+      <p style="color:#333; font-size:12px;">SAM AI Ecommerce &nbsp;•&nbsp; Powered by Google Gemini</p>
     </div>
 
   </div>
@@ -136,43 +261,47 @@
   <script>
     let selectedRole = null;
 
-    // Check if already logged in
     window.addEventListener('DOMContentLoaded', () => {
       const savedUser = localStorage.getItem('SAM_user');
       if (savedUser) {
-        const user = JSON.parse(savedUser);
-        redirectByRole(user.role);
+        try { redirectByRole(JSON.parse(savedUser).role); } catch(e) {}
       }
     });
 
     function redirectByRole(role) {
-      if (role === 'admin' || role === 'owner') {
-        window.location.href = '/admin.html';
-      } else {
-        window.location.href = '/shop.html';
-      }
+      window.location.href = (role === 'admin' || role === 'owner') ? '/admin.html' : '/shop.html';
     }
 
     function showLoginForm(role) {
       selectedRole = role;
       document.getElementById('loginRole').value = role;
-      document.getElementById('loginFormContainer').classList.remove('hidden');
-      document.getElementById('loginFormContainer').scrollIntoView({ behavior: 'smooth' });
+
+      // Highlight selected card
+      document.getElementById('adminCard').classList.toggle('selected', role === 'admin');
+      document.getElementById('customerCard').classList.toggle('selected', role === 'customer');
 
       if (role === 'admin') {
         document.getElementById('loginFormTitle').textContent = 'Admin Sign In';
+        document.getElementById('loginFormSub').textContent = 'Access the admin dashboard';
         document.getElementById('loginBtnText').textContent = 'Enter Dashboard';
         document.getElementById('quickFillLabel').textContent = 'Use Demo Admin Account';
       } else {
         document.getElementById('loginFormTitle').textContent = 'Customer Sign In';
+        document.getElementById('loginFormSub').textContent = 'Access the online store';
         document.getElementById('loginBtnText').textContent = 'Enter Store';
         document.getElementById('quickFillLabel').textContent = 'Use Demo Customer Account';
       }
+
+      document.getElementById('loginFormContainer').style.display = 'block';
+      document.getElementById('errorMsg').style.display = 'none';
+      setTimeout(() => document.getElementById('loginFormContainer').scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
     }
 
     function hideLoginForm() {
-      document.getElementById('loginFormContainer').classList.add('hidden');
-      document.getElementById('errorMsg').classList.add('hidden');
+      document.getElementById('loginFormContainer').style.display = 'none';
+      document.getElementById('errorMsg').style.display = 'none';
+      document.getElementById('adminCard').classList.remove('selected');
+      document.getElementById('customerCard').classList.remove('selected');
       selectedRole = null;
     }
 
@@ -193,15 +322,15 @@
 
     async function handleLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
+      const email    = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
-      const btn = document.getElementById('loginBtn');
+      const btn      = document.getElementById('loginBtn');
 
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...';
 
       try {
-        const res = await fetch('/api/auth/login', {
+        const res  = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -212,7 +341,7 @@
           localStorage.setItem('SAM_user', JSON.stringify(data.user));
           redirectByRole(data.user.role);
         } else {
-          showError(data.error || 'Invalid credentials');
+          showError(data.error || 'Invalid credentials. Please try again.');
           btn.disabled = false;
           btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Sign In</span>';
         }
@@ -226,7 +355,7 @@
     function showError(msg) {
       const el = document.getElementById('errorMsg');
       el.textContent = msg;
-      el.classList.remove('hidden');
+      el.style.display = 'block';
     }
   </script>
 </body>
