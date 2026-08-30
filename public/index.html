@@ -223,6 +223,14 @@
           </div>
         </div>
 
+        <div id="googleBtnContainer" style="margin-bottom: 16px;"></div>
+
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="flex:1; height:1px; background:#333;"></div>
+          <span style="font-size:11px; font-weight:700; color:#555; text-transform:uppercase;">or continue with email</span>
+          <div style="flex:1; height:1px; background:#333;"></div>
+        </div>
+
         <form onsubmit="handleLogin(event)" style="display:flex; flex-direction:column; gap:16px;">
           <div>
             <label class="field-label">Email Address</label>
@@ -258,15 +266,66 @@
 
   </div>
 
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     let selectedRole = null;
+    let googleClientId = '';
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       const savedUser = localStorage.getItem('SAM_user');
       if (savedUser) {
         try { redirectByRole(JSON.parse(savedUser).role); } catch(e) {}
       }
+
+      // Fetch Google Client ID from API
+      try {
+        const res = await fetch('/api/config');
+        const data = await res.json();
+        if (data.success && data.googleClientId) {
+          googleClientId = data.googleClientId;
+        }
+      } catch (err) {
+        console.error('Failed to load config', err);
+      }
     });
+
+    function initGoogleAuth() {
+      if (!googleClientId) return;
+      if (window.google) {
+        google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleCredentialResponse,
+          context: 'signin'
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("googleBtnContainer"),
+          { theme: "filled_black", size: "large", width: "100%", shape: "rectangular" }
+        );
+      }
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+      if (!response.credential) return;
+
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: response.credential })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          localStorage.setItem('SAM_user', JSON.stringify(data.user));
+          redirectByRole(data.user.role);
+        } else {
+          showError(data.error || 'Google Sign-In failed');
+        }
+      } catch (err) {
+        showError('Server error: ' + err.message);
+      }
+    }
+
 
     function redirectByRole(role) {
       window.location.href = (role === 'admin' || role === 'owner') ? '/admin.html' : '/shop.html';
@@ -294,7 +353,10 @@
 
       document.getElementById('loginFormContainer').style.display = 'block';
       document.getElementById('errorMsg').style.display = 'none';
-      setTimeout(() => document.getElementById('loginFormContainer').scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+      setTimeout(() => {
+        document.getElementById('loginFormContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        initGoogleAuth();
+      }, 50);
     }
 
     function hideLoginForm() {

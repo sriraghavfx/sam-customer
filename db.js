@@ -77,8 +77,9 @@ module.exports = {
       role: userData.role || 'customer',
       name: userData.name,
       email: userData.email,
-      phone: userData.phone,
-      passwordHash: hashPassword(userData.password),
+      phone: userData.phone || '',
+      passwordHash: userData.password ? hashPassword(userData.password) : null,
+      googleId: userData.googleId || null,
       createdAt: new Date().toISOString()
     };
     db.users.push(newUser);

@@ -81,6 +81,52 @@ module.exports = async (req, res) => {
       return sendJson(res, 401, { success: false, error: 'Invalid email or password' });
     }
 
+    if (pathname === '/api/auth/google' && method === 'POST') {
+      const body = await parseJsonBody(req);
+      const { credential } = body;
+      if (!credential) return sendJson(res, 400, { success: false, error: 'Missing credential' });
+
+      // Verify Google ID Token (Zero dependencies approach)
+      try {
+        const https = require('https');
+        const tokenInfo = await new Promise((resolve, reject) => {
+          https.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`, (googleRes) => {
+            let data = '';
+            googleRes.on('data', chunk => data += chunk);
+            googleRes.on('end', () => resolve(JSON.parse(data)));
+          }).on('error', reject);
+        });
+
+        if (tokenInfo.error) {
+          return sendJson(res, 401, { success: false, error: 'Invalid Google token' });
+        }
+
+        const { email, name, sub: googleId } = tokenInfo;
+        
+        let user = db.findUserByEmail(email);
+        if (!user) {
+          user = db.createUser({
+            name,
+            email,
+            role: 'customer',
+            googleId
+          });
+        }
+        
+        return sendJson(res, 200, { success: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+      } catch (err) {
+        return sendJson(res, 500, { success: false, error: 'Google auth verification failed' });
+      }
+    }
+
+    // ================= CONFIG API =================
+    if (pathname === '/api/config' && method === 'GET') {
+      return sendJson(res, 200, {
+        success: true,
+        googleClientId: process.env.GOOGLE_CLIENT_ID || ''
+      });
+    }
+
     // ================= DASHBOARD METRICS API =================
     if (pathname === '/api/dashboard/metrics' && method === 'GET') {
       const metrics = getDashboardMetrics();
