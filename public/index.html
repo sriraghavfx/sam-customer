@@ -231,7 +231,13 @@
           <div style="flex:1; height:1px; background:#333;"></div>
         </div>
 
-        <form onsubmit="handleLogin(event)" style="display:flex; flex-direction:column; gap:16px;">
+        <form id="authForm" onsubmit="handleAuth(event)" style="display:flex; flex-direction:column; gap:16px;">
+          <div id="registerFields" style="display:none; flex-direction:column; gap:16px;">
+            <div>
+              <label class="field-label">Full Name</label>
+              <input type="text" id="loginName" placeholder="Your Name">
+            </div>
+          </div>
           <div>
             <label class="field-label">Email Address</label>
             <input type="email" id="loginEmail" required placeholder="you@example.com">
@@ -242,20 +248,29 @@
           </div>
           <input type="hidden" id="loginRole">
           <button type="submit" id="loginBtn" class="btn-white" style="margin-top:4px;">
-            <i class="fa-solid fa-right-to-bracket"></i>
+            <i class="fa-solid fa-right-to-bracket" id="loginBtnIcon"></i>
             <span id="loginBtnText">Sign In</span>
           </button>
         </form>
 
+        <div style="text-align:center; margin-top:16px;">
+          <span style="font-size:13px; color:#666;" id="togglePrompt">Don't have an account?</span>
+          <button onclick="toggleAuthMode()" style="background:none; border:none; color:#fff; font-size:13px; font-weight:700; cursor:pointer; text-decoration:underline;">
+            <span id="toggleLink">Create New Account</span>
+          </button>
+        </div>
+
         <hr class="divider">
 
-        <div style="text-align:center; margin-bottom:10px;">
-          <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#444;">Demo Credentials</span>
+        <div id="demoCredentialsSection">
+          <div style="text-align:center; margin-bottom:10px;">
+            <span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#444;">Demo Credentials</span>
+          </div>
+          <button onclick="quickFill()" class="btn-ghost">
+            <i class="fa-solid fa-bolt" style="color:#fff;"></i>
+            <span id="quickFillLabel">Fill Demo Credentials</span>
+          </button>
         </div>
-        <button onclick="quickFill()" class="btn-ghost">
-          <i class="fa-solid fa-bolt" style="color:#fff;"></i>
-          <span id="quickFillLabel">Fill Demo Credentials</span>
-        </button>
       </div>
     </div>
 
@@ -344,11 +359,13 @@
         document.getElementById('loginFormSub').textContent = 'Access the admin dashboard';
         document.getElementById('loginBtnText').textContent = 'Enter Dashboard';
         document.getElementById('quickFillLabel').textContent = 'Use Demo Admin Account';
+        document.getElementById('togglePrompt').parentElement.style.display = 'none';
       } else {
         document.getElementById('loginFormTitle').textContent = 'Customer Sign In';
         document.getElementById('loginFormSub').textContent = 'Access the online store';
         document.getElementById('loginBtnText').textContent = 'Enter Store';
         document.getElementById('quickFillLabel').textContent = 'Use Demo Customer Account';
+        document.getElementById('togglePrompt').parentElement.style.display = 'block';
       }
 
       document.getElementById('loginFormContainer').style.display = 'block';
@@ -365,6 +382,7 @@
       document.getElementById('adminCard').classList.remove('selected');
       document.getElementById('customerCard').classList.remove('selected');
       selectedRole = null;
+      if (isRegisterMode) toggleAuthMode();
     }
 
     function browseAsGuest(e) {
@@ -382,20 +400,66 @@
       }
     }
 
-    async function handleLogin(e) {
+    let isRegisterMode = false;
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      const regFields = document.getElementById('registerFields');
+      const title = document.getElementById('loginFormTitle');
+      const sub = document.getElementById('loginFormSub');
+      const btnText = document.getElementById('loginBtnText');
+      const btnIcon = document.getElementById('loginBtnIcon');
+      const prompt = document.getElementById('togglePrompt');
+      const link = document.getElementById('toggleLink');
+      const demoSec = document.getElementById('demoCredentialsSection');
+      
+      if (isRegisterMode) {
+        regFields.style.display = 'flex';
+        document.getElementById('loginName').required = true;
+        title.textContent = selectedRole === 'admin' ? 'Admin Registration' : 'Customer Registration';
+        sub.textContent = 'Create a new account';
+        btnText.textContent = 'Sign Up';
+        btnIcon.className = 'fa-solid fa-user-plus';
+        prompt.textContent = 'Already have an account?';
+        link.textContent = 'Sign In';
+        demoSec.style.display = 'none';
+      } else {
+        regFields.style.display = 'none';
+        document.getElementById('loginName').required = false;
+        title.textContent = selectedRole === 'admin' ? 'Admin Sign In' : 'Customer Sign In';
+        sub.textContent = selectedRole === 'admin' ? 'Access the admin dashboard' : 'Access the online store';
+        btnText.textContent = selectedRole === 'admin' ? 'Enter Dashboard' : 'Enter Store';
+        btnIcon.className = 'fa-solid fa-right-to-bracket';
+        prompt.textContent = "Don't have an account?";
+        link.textContent = 'Create New Account';
+        demoSec.style.display = 'block';
+      }
+    }
+
+    async function handleAuth(e) {
       e.preventDefault();
       const email    = document.getElementById('loginEmail').value;
       const password = document.getElementById('loginPassword').value;
+      const name     = document.getElementById('loginName').value;
       const btn      = document.getElementById('loginBtn');
 
       btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Signing in...';
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${isRegisterMode ? 'Signing up...' : 'Signing in...'}`;
 
       try {
-        const res  = await fetch('/api/auth/login', {
+        let endpoint = '/api/auth/login';
+        let payload = { email, password };
+
+        if (isRegisterMode) {
+          endpoint = '/api/customers';
+          payload = { name, email, password };
+          // If we allow admin registration, we'd add role here, but api/customers hardcodes role='customer' right now.
+        }
+
+        const res  = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify(payload)
         });
         const data = await res.json();
 
@@ -403,14 +467,14 @@
           localStorage.setItem('SAM_user', JSON.stringify(data.user));
           redirectByRole(data.user.role);
         } else {
-          showError(data.error || 'Invalid credentials. Please try again.');
+          showError(data.error || 'Authentication failed. Please try again.');
           btn.disabled = false;
-          btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Sign In</span>';
+          btn.innerHTML = `<i class="fa-solid ${isRegisterMode ? 'fa-user-plus' : 'fa-right-to-bracket'}"></i> <span id="loginBtnText">${isRegisterMode ? 'Sign Up' : 'Sign In'}</span>`;
         }
       } catch (err) {
         showError('Server error: ' + err.message);
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Sign In</span>';
+        btn.innerHTML = `<i class="fa-solid ${isRegisterMode ? 'fa-user-plus' : 'fa-right-to-bracket'}"></i> <span id="loginBtnText">${isRegisterMode ? 'Sign Up' : 'Sign In'}</span>`;
       }
     }
 
