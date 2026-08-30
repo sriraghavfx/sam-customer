@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 const db = require('./db');
 
@@ -136,93 +136,82 @@ function runSeed() {
     ],
     orders: [
       {
-        id: 101,
-        customerId: 2,
-        customerName: "Rahul Sharma",
-        date: "2026-08-15T10:30:00Z",
-        totalAmount: 8499,
-        status: "Delivered",
+        id: 101, customerId: 2, customerName: "Rahul Sharma",
+        createdAt: "2026-08-15T10:30:00Z", date: "2026-08-15T10:30:00Z",
+        totalAmount: 8499, status: "Delivered",
         items: [{ productId: 2, name: "Smart Watch Ultra Pro", qty: 1, price: 8499 }]
       },
       {
-        id: 102,
-        customerId: 2,
-        customerName: "Rahul Sharma",
-        date: "2026-07-20T14:00:00Z",
-        totalAmount: 4999,
-        status: "Delivered",
+        id: 102, customerId: 2, customerName: "Rahul Sharma",
+        createdAt: "2026-07-20T14:00:00Z", date: "2026-07-20T14:00:00Z",
+        totalAmount: 4999, status: "Delivered",
         items: [{ productId: 1, name: "Wireless Noise Cancelling Headphones", qty: 1, price: 4999 }]
       },
       {
-        id: 103,
-        customerId: 2,
-        customerName: "Rahul Sharma",
-        date: "2026-06-05T18:15:00Z",
-        totalAmount: 2799,
-        status: "Delivered",
+        id: 103, customerId: 2, customerName: "Rahul Sharma",
+        createdAt: "2026-06-05T18:15:00Z", date: "2026-06-05T18:15:00Z",
+        totalAmount: 2799, status: "Delivered",
         items: [{ productId: 5, name: "3-in-1 Fast Wireless Charging Dock", qty: 1, price: 2799 }]
       },
       {
-        id: 104,
-        customerId: 3,
-        customerName: "Priya Patel",
-        date: "2026-08-01T11:45:00Z",
-        totalAmount: 3198,
-        status: "Delivered",
+        id: 104, customerId: 3, customerName: "Priya Patel",
+        createdAt: "2026-08-01T11:45:00Z", date: "2026-08-01T11:45:00Z",
+        totalAmount: 3198, status: "Delivered",
         items: [
           { productId: 3, name: "Organic Cotton Casual Hoodie", qty: 1, price: 1899 },
           { productId: 4, name: "Minimalist Leather RFID Wallet", qty: 1, price: 1299 }
         ]
       },
       {
-        id: 105,
-        customerId: 4,
-        customerName: "Amit Kumar",
-        date: "2026-06-01T09:20:00Z",
-        totalAmount: 4999,
-        status: "Delivered",
+        id: 105, customerId: 4, customerName: "Amit Kumar",
+        createdAt: "2026-06-01T09:20:00Z", date: "2026-06-01T09:20:00Z",
+        totalAmount: 4999, status: "Delivered",
         items: [{ productId: 1, name: "Wireless Noise Cancelling Headphones", qty: 1, price: 4999 }]
       },
       {
-        id: 106,
-        customerId: 5,
-        customerName: "Sneha Reddy",
-        date: "2026-08-25T15:10:00Z",
-        totalAmount: 999,
-        status: "Delivered",
+        id: 106, customerId: 5, customerName: "Sneha Reddy",
+        createdAt: "2026-08-25T15:10:00Z", date: "2026-08-25T15:10:00Z",
+        totalAmount: 999, status: "Delivered",
         items: [{ productId: 6, name: "Thermal Smart Insulated Tumbler", qty: 1, price: 999 }]
       },
       {
-        id: 107,
-        customerId: 6,
-        customerName: "Vikram Singh",
-        date: "2026-08-05T17:30:00Z",
-        totalAmount: 1299,
-        status: "Delivered",
+        id: 107, customerId: 6, customerName: "Vikram Singh",
+        createdAt: "2026-08-05T17:30:00Z", date: "2026-08-05T17:30:00Z",
+        totalAmount: 1299, status: "Delivered",
         items: [{ productId: 4, name: "Minimalist Leather RFID Wallet", qty: 1, price: 1299 }]
+      },
+      {
+        id: 108, customerId: 3, customerName: "Priya Patel",
+        createdAt: "2026-08-20T13:00:00Z", date: "2026-08-20T13:00:00Z",
+        totalAmount: 2799, status: "Delivered",
+        items: [{ productId: 5, name: "3-in-1 Fast Wireless Charging Dock", qty: 1, price: 2799 }]
+      },
+      {
+        id: 109, customerId: 4, customerName: "Amit Kumar",
+        createdAt: "2026-08-10T10:00:00Z", date: "2026-08-10T10:00:00Z",
+        totalAmount: 408, status: "Delivered",
+        items: [{ productId: 6, name: "Thermal Smart Insulated Tumbler", qty: 1, price: 408 }]
       }
     ],
     transactions: [
-      { id: 1, orderId: 101, customerId: 2, productId: 2, productName: "Smart Watch Ultra Pro", category: "Electronics", quantity: 1, unitPrice: 8499, date: "2026-08-15" },
-      { id: 2, orderId: 102, customerId: 2, productId: 1, productName: "Wireless Noise Cancelling Headphones", category: "Electronics", quantity: 1, unitPrice: 4999, date: "2026-07-20" },
-      { id: 3, orderId: 103, customerId: 2, productId: 5, productName: "3-in-1 Fast Wireless Charging Dock", category: "Electronics", quantity: 1, unitPrice: 2799, date: "2026-06-05" },
-      { id: 4, orderId: 104, customerId: 3, productId: 3, productName: "Organic Cotton Casual Hoodie", category: "Fashion", quantity: 1, unitPrice: 1899, date: "2026-08-01" },
-      { id: 5, orderId: 104, customerId: 3, productId: 4, productName: "Minimalist Leather RFID Wallet", category: "Accessories", quantity: 1, unitPrice: 1299, date: "2026-08-01" },
-      { id: 6, orderId: 105, customerId: 4, productId: 1, productName: "Wireless Noise Cancelling Headphones", category: "Electronics", quantity: 1, unitPrice: 4999, date: "2026-06-01" },
-      { id: 7, orderId: 106, customerId: 5, productId: 6, productName: "Thermal Smart Insulated Tumbler", category: "Home & Kitchen", quantity: 1, unitPrice: 999, date: "2026-08-25" },
-      { id: 8, orderId: 107, customerId: 6, productId: 4, productName: "Minimalist Leather RFID Wallet", category: "Accessories", quantity: 1, unitPrice: 1299, date: "2026-08-05" }
+      { id: 1, orderId: 101, customerId: 2, productId: 2, productName: "Smart Watch Ultra Pro", category: "Electronics", qty: 1, amount: 8499, date: "2026-08-15T10:30:00Z" },
+      { id: 2, orderId: 102, customerId: 2, productId: 1, productName: "Wireless Noise Cancelling Headphones", category: "Electronics", qty: 1, amount: 4999, date: "2026-07-20T14:00:00Z" },
+      { id: 3, orderId: 103, customerId: 2, productId: 5, productName: "3-in-1 Fast Wireless Charging Dock", category: "Electronics", qty: 1, amount: 2799, date: "2026-06-05T18:15:00Z" },
+      { id: 4, orderId: 104, customerId: 3, productId: 3, productName: "Organic Cotton Casual Hoodie", category: "Fashion", qty: 1, amount: 1899, date: "2026-08-01T11:45:00Z" },
+      { id: 5, orderId: 104, customerId: 3, productId: 4, productName: "Minimalist Leather RFID Wallet", category: "Accessories", qty: 1, amount: 1299, date: "2026-08-01T11:45:00Z" },
+      { id: 6, orderId: 105, customerId: 4, productId: 1, productName: "Wireless Noise Cancelling Headphones", category: "Electronics", qty: 1, amount: 4999, date: "2026-06-01T09:20:00Z" },
+      { id: 7, orderId: 106, customerId: 5, productId: 6, productName: "Thermal Smart Insulated Tumbler", category: "Home & Kitchen", qty: 1, amount: 999, date: "2026-08-25T15:10:00Z" },
+      { id: 8, orderId: 107, customerId: 6, productId: 4, productName: "Minimalist Leather RFID Wallet", category: "Accessories", qty: 1, amount: 1299, date: "2026-08-05T17:30:00Z" },
+      { id: 9, orderId: 108, customerId: 3, productId: 5, productName: "3-in-1 Fast Wireless Charging Dock", category: "Electronics", qty: 1, amount: 2799, date: "2026-08-20T13:00:00Z" },
+      { id: 10, orderId: 109, customerId: 4, productId: 6, productName: "Thermal Smart Insulated Tumbler", category: "Home & Kitchen", qty: 1, amount: 408, date: "2026-08-10T10:00:00Z" }
     ],
     campaigns: [
       {
-        id: 1,
-        customerId: 4,
-        customerName: "Amit Kumar",
-        phone: "+91 98456 78903",
-        productId: 5,
+        id: 1, customerId: 4, customerName: "Amit Kumar",
+        phone: "+91 98456 78903", productId: 5,
         productName: "3-in-1 Fast Wireless Charging Dock",
-        message: "Hi Amit! Miss you at our shop! Enjoy 20% OFF on 3-in-1 Fast Wireless Charging Dock with code WINBACK20: https://myshop.link/p/5",
-        discountCode: "WINBACK20",
-        status: "Delivered (Demo)",
+        message: "Hi Amit! Miss you at our shop! Enjoy 20% OFF on 3-in-1 Fast Wireless Charging Dock with code WINBACK20",
+        discountCode: "WINBACK20", status: "Delivered (Demo)",
         sentAt: "2026-08-28T14:20:00Z"
       }
     ]
