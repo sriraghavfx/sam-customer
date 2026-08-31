@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAM – Online Store</title>
+  <title>NUKEPC Store</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand: { 50:'#f9fafb',100:'#f3f4f6',200:'#e5e7eb',300:'#d1d5db',400:'#9ca3af',500:'#6b7280',600:'#374151',700:'#1f2937',800:'#111827',900:'#030712' }
+            brand: { orange: '#ff4b1f' }
           }
         }
       }
@@ -18,141 +18,172 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    .product-card { transition: transform 0.2s, box-shadow 0.2s; }
-    .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.1); }
+    body { background-color: #050505; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .product-card { transition: all 0.3s ease; }
+    .product-card:hover { transform: translateY(-3px); box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
     .cart-panel { transition: transform 0.3s ease; }
     .cart-panel.hidden-cart { transform: translateX(100%); }
     #cartOverlay { transition: opacity 0.3s; }
+    
+    /* Glowing button effect */
+    .glow-btn-container { position: relative; display: inline-block; }
+    .glow-btn-container::before {
+      content: ''; position: absolute; inset: -5px; background: #ff4b1f; filter: blur(20px); opacity: 0.6; border-radius: 50px; z-index: 0;
+    }
+    .glow-btn { position: relative; z-index: 1; }
+
+    /* Orange accent divider */
+    .section-divider { width: 30px; height: 3px; background-color: #ff4b1f; margin: 0 auto 30px auto; border-radius: 2px; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-[#050505] text-white min-h-screen flex flex-col">
 
   <!-- NAVBAR -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-      <a href="/index.html" class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-white text-lg shadow-md">
-          <i class="fa-solid fa-store"></i>
+  <header class="bg-[#050505] border-b border-[#1a1a1a] sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20">
+      
+      <!-- Logo -->
+      <a href="/index.html" class="flex items-center gap-2">
+        <div class="flex items-center gap-1 text-[#ff4b1f]">
+          <div class="w-1.5 h-6 bg-[#ff4b1f] transform -skew-x-12"></div>
+          <div class="w-2.5 h-6 bg-[#ff4b1f] transform -skew-x-12"></div>
         </div>
-        <span class="font-bold text-lg text-slate-900 tracking-tight">SAM <span class="text-gray-900">Store</span></span>
+        <span class="font-bold text-xl tracking-wide uppercase ml-1">NUKEPC</span>
       </a>
 
-      <!-- Search -->
-      <div class="hidden md:flex items-center bg-slate-100 rounded-xl px-4 py-2 gap-2 w-80">
-        <i class="fa-solid fa-search text-slate-400 text-sm"></i>
-        <input type="text" id="searchInput" placeholder="Search products…" oninput="filterProducts()" class="bg-transparent text-sm outline-none w-full text-slate-700 placeholder-slate-400">
-      </div>
+      <!-- Center Links -->
+      <nav class="hidden md:flex items-center bg-[#111] rounded-full px-1 py-1 border border-[#222]">
+        <a href="#" class="px-5 py-2 text-sm text-gray-300 hover:text-white transition">Prebuild</a>
+        <a href="#" class="px-5 py-2 text-sm text-gray-300 hover:text-white transition">Accessories</a>
+        <a href="#" class="px-5 py-2 text-sm text-gray-300 hover:text-white transition">About</a>
+        <a href="#" class="px-5 py-2 text-sm text-gray-300 hover:text-white transition">My Configurations</a>
+        <a href="#" class="px-5 py-2 text-sm text-gray-300 hover:text-white transition">Gallery</a>
+      </nav>
 
       <!-- Right -->
-      <div class="flex items-center gap-3">
-        <div id="userGreeting" class="hidden md:flex items-center gap-2 text-sm text-slate-600">
-          <i class="fa-solid fa-user-circle text-gray-700 text-lg"></i>
+      <div class="flex items-center gap-4">
+        <div id="userGreeting" class="hidden md:flex items-center gap-2 text-sm text-gray-400">
+          <i class="fa-solid fa-user-circle text-gray-500 text-lg"></i>
           <span id="greetingName"></span>
         </div>
-        <a id="loginBtn" href="/index.html" class="text-sm text-gray-900 hover:underline font-medium">Login</a>
-        <button onclick="toggleCart()" class="relative flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white text-sm font-semibold rounded-xl transition">
+        <a id="loginBtn" href="/index.html" class="px-6 py-2 bg-[#ff4b1f] hover:bg-[#e03d15] text-white text-sm font-medium rounded-full transition shadow-lg">Login</a>
+        <button onclick="toggleCart()" class="relative flex items-center gap-2 px-4 py-2 bg-[#111] border border-[#222] hover:bg-[#1a1a1a] text-white text-sm rounded-full transition">
           <i class="fa-solid fa-cart-shopping"></i>
-          <span>Cart</span>
-          <span id="cartCount" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-black text-white text-xs rounded-full flex items-center justify-center font-bold">0</span>
+          <span id="cartCount" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-[#ff4b1f] text-white text-[10px] rounded-full flex items-center justify-center font-bold">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- HERO BANNER -->
-  <section class="bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white py-16 px-4">
-    <div class="max-w-7xl mx-auto text-center">
-      <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-sm font-medium mb-4">🤖 AI-Powered Recommendations</span>
-      <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Discover Products<br>You'll <span class="text-yellow-300">Love</span></h1>
-      <p class="text-indigo-100 text-lg mb-8 max-w-xl mx-auto">Shop smarter with AI-curated picks, exclusive deals, and personalised offers delivered right to your phone.</p>
-      <button onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})" class="px-8 py-3.5 bg-white text-gray-900 font-bold rounded-2xl shadow-lg hover:bg-indigo-50 transition text-lg">
-        Shop Now <i class="fa-solid fa-arrow-down ml-2"></i>
-      </button>
-    </div>
+  <!-- HERO SECTION -->
+  <section class="pt-16 pb-12 px-4 text-center max-w-4xl mx-auto">
+    <p class="text-gray-400 text-lg leading-relaxed">
+      Get performance-ready PCs designed for gaming, work, and everyday use. With premium components, effortless setup, and optimized performance, our pre-built systems deliver reliability and style right out of the box.
+    </p>
   </section>
 
-  <!-- CATEGORY FILTERS -->
-  <div class="bg-white border-b border-slate-100 py-3 px-4 sticky top-16 z-20">
-    <div class="max-w-7xl mx-auto flex gap-2 overflow-x-auto scrollbar-hide pb-1" id="categoryBar">
-      <button onclick="filterByCategory('')" data-cat="" class="cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-black text-white transition">All</button>
+  <!-- CATEGORY FILTERS (Hidden/Adapted for NukePC style) -->
+  <div class="px-4 mb-8">
+    <div class="max-w-7xl mx-auto flex gap-3 overflow-x-auto scrollbar-hide justify-center" id="categoryBar">
+      <button onclick="filterByCategory('')" data-cat="" class="cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-[#ff4b1f] text-white transition">All</button>
     </div>
   </div>
 
   <!-- PRODUCTS SECTION -->
-  <main id="products-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-2xl font-bold text-slate-900">All Products</h2>
-      <select id="sortSelect" onchange="sortProducts()" class="px-3 py-2 rounded-xl border border-slate-200 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-gray-900">
+  <main id="products-section" class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-20 w-full relative">
+    
+    <!-- Left Arrow (Decorative) -->
+    <button class="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#ff4b1f] rounded-full flex items-center justify-center text-white text-xl z-10 shadow-lg hover:bg-[#e03d15] transition hidden lg:flex ml-4">
+      <i class="fa-solid fa-caret-left"></i>
+    </button>
+
+    <!-- Right Arrow (Decorative) -->
+    <button class="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#ff4b1f] rounded-full flex items-center justify-center text-white text-xl z-10 shadow-lg hover:bg-[#e03d15] transition hidden lg:flex mr-4">
+      <i class="fa-solid fa-caret-right"></i>
+    </button>
+
+    <div class="flex justify-end mb-4 max-w-6xl mx-auto">
+      <select id="sortSelect" onchange="sortProducts()" class="px-3 py-1.5 rounded-lg bg-[#111] border border-[#222] text-sm text-gray-300 focus:outline-none">
         <option value="default">Sort: Featured</option>
         <option value="price-asc">Price: Low to High</option>
         <option value="price-desc">Price: High to Low</option>
-        <option value="name">Name: A-Z</option>
       </select>
     </div>
 
-    <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      <!-- Skeleton -->
-      <div class="bg-white rounded-2xl border border-slate-100 animate-pulse h-64"></div>
-      <div class="bg-white rounded-2xl border border-slate-100 animate-pulse h-64"></div>
-      <div class="bg-white rounded-2xl border border-slate-100 animate-pulse h-64"></div>
-      <div class="bg-white rounded-2xl border border-slate-100 animate-pulse h-64"></div>
-      <div class="bg-white rounded-2xl border border-slate-100 animate-pulse h-64"></div>
+    <!-- Hidden Search Input for JS compatibility -->
+    <input type="text" id="searchInput" class="hidden">
+
+    <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto relative z-0">
+      <!-- Skeletons -->
+      <div class="bg-[#0f0f0f] rounded-2xl animate-pulse h-80"></div>
+      <div class="bg-[#0f0f0f] rounded-2xl animate-pulse h-80"></div>
+      <div class="bg-[#0f0f0f] rounded-2xl animate-pulse h-80"></div>
+      <div class="bg-[#0f0f0f] rounded-2xl animate-pulse h-80"></div>
     </div>
 
     <div id="emptyState" class="hidden text-center py-20">
-      <i class="fa-solid fa-box-open text-5xl text-slate-300 mb-4"></i>
-      <p class="text-slate-500 text-lg">No products found</p>
+      <p class="text-gray-500 text-lg">No products found</p>
+    </div>
+
+    <!-- View More Button -->
+    <div class="mt-20 text-center">
+      <div class="section-divider"></div>
+      <div class="glow-btn-container mt-6">
+        <button class="glow-btn bg-[#ff4b1f] hover:bg-[#e03d15] text-white px-8 py-3.5 rounded-full font-bold text-lg flex items-center gap-3 mx-auto transition">
+          View More 
+          <span class="bg-white text-[#ff4b1f] w-6 h-6 rounded-full flex items-center justify-center text-sm">
+            <i class="fa-solid fa-arrow-right"></i>
+          </span>
+        </button>
+      </div>
     </div>
   </main>
 
   <!-- CART OVERLAY -->
-  <div id="cartOverlay" onclick="toggleCart()" class="hidden fixed inset-0 bg-black/50 z-40"></div>
+  <div id="cartOverlay" onclick="toggleCart()" class="hidden fixed inset-0 bg-black/80 z-40"></div>
 
   <!-- CART PANEL -->
-  <div id="cartPanel" class="cart-panel hidden-cart fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl flex flex-col">
-    <div class="flex items-center justify-between p-5 border-b border-slate-100">
-      <h2 class="text-lg font-bold text-slate-900">Your Cart <span id="cartCountBadge" class="ml-2 text-sm font-normal text-slate-400"></span></h2>
-      <button onclick="toggleCart()" class="text-slate-400 hover:text-slate-700 text-2xl transition"><i class="fa-solid fa-xmark"></i></button>
+  <div id="cartPanel" class="cart-panel hidden-cart fixed top-0 right-0 h-full w-full max-w-md bg-[#111] border-l border-[#222] z-50 shadow-2xl flex flex-col text-white">
+    <div class="flex items-center justify-between p-5 border-b border-[#222]">
+      <h2 class="text-lg font-bold">Your Cart <span id="cartCountBadge" class="ml-2 text-sm font-normal text-gray-500"></span></h2>
+      <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-2xl transition"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
     <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-4">
-      <div id="cartEmpty" class="flex flex-col items-center justify-center h-full text-slate-400">
-        <i class="fa-solid fa-cart-shopping text-5xl mb-4 opacity-30"></i>
+      <div id="cartEmpty" class="flex flex-col items-center justify-center h-full text-gray-500">
+        <i class="fa-solid fa-cart-shopping text-5xl mb-4 opacity-20"></i>
         <p>Your cart is empty</p>
       </div>
     </div>
 
-    <div id="cartFooter" class="hidden p-5 border-t border-slate-100 space-y-3">
-      <div class="flex justify-between text-sm text-slate-600">
-        <span>Subtotal</span><span id="cartSubtotal" class="font-semibold text-slate-900"></span>
+    <div id="cartFooter" class="hidden p-5 border-t border-[#222] space-y-3 bg-[#0a0a0a]">
+      <div class="flex justify-between text-sm text-gray-400">
+        <span>Subtotal</span><span id="cartSubtotal" class="font-semibold text-white"></span>
       </div>
-      <div class="flex justify-between text-sm text-slate-600">
-        <span>Shipping</span><span class="text-gray-600 font-medium">FREE</span>
-      </div>
-      <div class="flex justify-between font-bold text-slate-900 text-base border-t pt-3">
+      <div class="flex justify-between font-bold text-white text-base border-t border-[#222] pt-3">
         <span>Total</span><span id="cartTotal"></span>
       </div>
-      <button onclick="placeOrder()" class="w-full py-3.5 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-2xl transition flex items-center justify-center gap-2 text-base">
-        <i class="fa-solid fa-bag-shopping"></i> Place Order
+      <button onclick="placeOrder()" class="w-full py-3.5 bg-[#ff4b1f] hover:bg-[#e03d15] text-white font-bold rounded-xl transition mt-2">
+        Checkout
       </button>
     </div>
   </div>
 
   <!-- Order Success Modal -->
-  <div id="orderModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center">
-      <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-5">
-        <i class="fa-solid fa-check text-gray-900 text-3xl"></i>
+  <div id="orderModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="bg-[#111] border border-[#333] rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center">
+      <div class="w-16 h-16 rounded-full bg-[#ff4b1f]/20 flex items-center justify-center mx-auto mb-5 text-[#ff4b1f]">
+        <i class="fa-solid fa-check text-3xl"></i>
       </div>
-      <h2 class="text-2xl font-bold text-slate-900 mb-2">Order Placed!</h2>
-      <p id="orderSuccessMsg" class="text-slate-500 text-sm mb-6">Your order has been received. Keep an eye on your phone for AI deal alerts!</p>
-      <button onclick="document.getElementById('orderModal').classList.add('hidden')" class="w-full py-3 bg-black text-white font-bold rounded-2xl hover:bg-gray-900 transition">Continue Shopping</button>
+      <h2 class="text-2xl font-bold text-white mb-2">Order Placed!</h2>
+      <p id="orderSuccessMsg" class="text-gray-400 text-sm mb-6"></p>
+      <button onclick="document.getElementById('orderModal').classList.add('hidden')" class="w-full py-3 bg-[#ff4b1f] text-white font-bold rounded-xl hover:bg-[#e03d15] transition">Continue Shopping</button>
     </div>
   </div>
 
   <!-- Toast -->
-  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl text-sm font-medium flex items-center gap-3 z-50">
-    <i class="fa-solid fa-check-circle text-green-400"></i>
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#ff4b1f] text-white px-6 py-3 rounded-full shadow-2xl text-sm font-medium flex items-center gap-3 z-50">
+    <i class="fa-solid fa-info-circle"></i>
     <span id="toastMsg"></span>
   </div>
 

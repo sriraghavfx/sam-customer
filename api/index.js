@@ -82,8 +82,75 @@ module.exports = async (req, res) => {
     }
 
     if (pathname === '/api/auth/forgot-password' && method === 'POST') {
-      // Dummy endpoint for prototype: always returns success to prevent email enumeration
-      return sendJson(res, 200, { success: true, message: 'If that email exists, a reset link has been sent.' });
+      const body = await parseJsonBody(req);
+      const user = db.findUserByEmail(body.email);
+      if (!user) {
+        return sendJson(res, 200, { success: true, message: 'If that email exists, a reset link has been sent.' });
+      }
+
+      const crypto = require('crypto');
+      const resetToken = crypto.randomBytes(20).toString('hex');
+      db.updateUser(user.id, {
+        resetToken,
+        resetTokenExpiry: Date.now() + 3600000 // 1 hour
+      });
+
+      const protocol = req.headers.host.includes('localhost') ? 'http' : 'https';
+      const resetLink = `${protocol}://${req.headers.host}/reset-password.html?token=${resetToken}`;
+      const resendKey = process.env.RESEND_API_KEY;
+
+      if (resendKey) {
+        try {
+          const https = require('https');
+          const emailData = JSON.stringify({
+            from: 'SAM Store <onboarding@resend.dev>',
+            to: user.email,
+            subject: 'Password Reset Request',
+            html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 1 hour.</p>`
+          });
+          const reqOptions = {
+            hostname: 'api.resend.com', path: '/emails', method: 'POST',
+            headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json', 'Content-Length': emailData.length }
+          };
+          await new Promise((resolve, reject) => {
+            const outReq = https.request(reqOptions, (outRes) => {
+              outRes.on('data', () => {});
+              outRes.on('end', resolve);
+            });
+            outReq.on('error', reject);
+            outReq.write(emailData);
+            outReq.end();
+          });
+          return sendJson(res, 200, { success: true, message: 'Password reset link sent to your email.' });
+        } catch (e) {
+          return sendJson(res, 500, { success: false, error: 'Failed to send email.' });
+        }
+      } else {
+        // Fallback for local testing / no API key
+        return sendJson(res, 200, { 
+          success: true, 
+          message: 'No email service configured. Please use the link below to reset your password.',
+          fallbackLink: resetLink
+        });
+      }
+    }
+
+    if (pathname === '/api/auth/reset-password' && method === 'POST') {
+      const body = await parseJsonBody(req);
+      const { token, newPassword } = body;
+      if (!token || !newPassword) return sendJson(res, 400, { success: false, error: 'Missing token or password' });
+
+      const users = db.getUsers();
+      const user = users.find(u => u.resetToken === token && u.resetTokenExpiry > Date.now());
+      if (!user) return sendJson(res, 400, { success: false, error: 'Invalid or expired reset token.' });
+
+      db.updateUser(user.id, {
+        passwordHash: db.hashPassword(newPassword),
+        resetToken: null,
+        resetTokenExpiry: null
+      });
+
+      return sendJson(res, 200, { success: true, message: 'Password has been reset successfully.' });
     }
 
     if (pathname === '/api/auth/google' && method === 'POST') {

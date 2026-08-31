@@ -503,11 +503,18 @@
         if (data.success) {
           if (authMode === 'forgot') {
              btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Link Sent</span>';
-             showError(data.message || 'If an account exists, a reset link has been sent.', true);
-             setTimeout(() => {
-                setAuthMode('login');
-                btn.disabled = false;
-             }, 3000);
+             
+             if (data.fallbackLink) {
+               showError(`<span>${data.message}</span><br><br><a href="${data.fallbackLink}" style="color:#fff; text-decoration:underline; font-weight:bold; background:#2f6f4f; padding:6px 12px; border-radius:6px; display:inline-block; margin-top:8px;">TEST MODE: Click Here to Reset</a>`, true, true);
+               btn.disabled = false;
+               resetBtnUI();
+             } else {
+               showError(data.message || 'If an account exists, a reset link has been sent.', true);
+               setTimeout(() => {
+                  setAuthMode('login');
+                  btn.disabled = false;
+               }, 3000);
+             }
           } else {
              localStorage.setItem('SAM_user', JSON.stringify(data.user));
              redirectByRole(data.user.role);
@@ -530,9 +537,10 @@
       }
     }
 
-    function showError(msg, isSuccess = false) {
+    function showError(msg, isSuccess = false, isHtml = false) {
       const el = document.getElementById('errorMsg');
-      el.textContent = msg;
+      if (isHtml) el.innerHTML = msg;
+      else el.textContent = msg;
       
       if (isSuccess) {
         el.style.background = '#0a2a1a';
