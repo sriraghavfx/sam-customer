@@ -59,7 +59,7 @@ function buildCategoryBar() {
     const btn = document.createElement('button');
     btn.onclick = () => filterByCategory(cat);
     btn.setAttribute('data-cat', cat);
-    btn.className = 'cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-600 hover:bg-gray-100 hover:text-gray-900 transition';
+    btn.className = 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium bg-[#111] text-gray-400 hover:text-white transition';
     btn.textContent = cat;
     bar.appendChild(btn);
   });
@@ -68,10 +68,10 @@ function buildCategoryBar() {
 function filterByCategory(cat) {
   activeCategory = cat;
   document.querySelectorAll('.cat-btn').forEach(b => {
-    b.className = 'cat-btn flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium ' +
+    b.className = 'cat-btn flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium ' +
       (b.getAttribute('data-cat') === cat
-        ? 'bg-gray-800 text-white'
-        : 'bg-slate-100 text-slate-600 hover:bg-gray-100 hover:text-gray-900') +
+        ? 'bg-[#ff4b1f] text-white'
+        : 'bg-[#111] text-gray-400 hover:text-white') +
       ' transition';
   });
   applyFilters();
@@ -112,29 +112,20 @@ function renderProducts(products) {
   empty.classList.add('hidden');
 
   grid.innerHTML = products.map(p => {
-    const discount = p.originalPrice && p.originalPrice > p.price
-      ? Math.round((1 - p.price / p.originalPrice) * 100) : null;
     return `
-      <div class="product-card bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden cursor-pointer" onclick="addToCart(${p.id})">
-        <div class="relative h-44 bg-slate-100 overflow-hidden">
-          <img src="${p.imageUrl || 'https://via.placeholder.com/300x176?text=No+Image'}"
-            alt="${p.name}" class="w-full h-full object-cover"
-            onerror="this.src='https://via.placeholder.com/300x176?text=No+Image'">
-          ${discount ? `<span class="absolute top-2 left-2 bg-black text-white text-xs font-bold px-2 py-0.5 rounded-full">${discount}% OFF</span>` : ''}
-          ${p.stock <= 5 && p.stock > 0 ? `<span class="absolute top-2 right-2 bg-gray-400 text-gray-900 text-xs font-bold px-2 py-0.5 rounded-full">Only ${p.stock} left!</span>` : ''}
-          ${p.stock === 0 ? `<div class="absolute inset-0 bg-white/70 flex items-center justify-center"><span class="text-slate-500 font-bold text-sm">Out of Stock</span></div>` : ''}
+      <div class="product-card bg-[#111] rounded-[24px] p-6 border border-[#1a1a1a] cursor-pointer" onclick="addToCart(${p.id})">
+        <div class="text-left mb-2">
+          <h3 class="text-white text-[17px] font-medium tracking-wide mb-1">${p.name}</h3>
+          <div class="text-[#ff4b1f] text-[13px]">${p.category || 'Mid-Range'}</div>
         </div>
-        <div class="p-3">
-          <div class="text-xs text-slate-400 mb-1">${p.category || 'General'}</div>
-          <h3 class="font-semibold text-slate-900 text-sm leading-tight mb-2 line-clamp-2">${p.name}</h3>
-          <div class="flex items-center gap-2 mb-3">
-            <span class="text-gray-900 font-bold text-base">₹${p.price.toLocaleString()}</span>
-            ${p.originalPrice ? `<span class="text-xs text-slate-400 line-through">₹${p.originalPrice.toLocaleString()}</span>` : ''}
-          </div>
-          <button onclick="event.stopPropagation(); addToCart(${p.id})" ${p.stock === 0 ? 'disabled' : ''}
-            class="w-full py-2 ${p.stock === 0 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-900 text-white'} text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1">
-            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-          </button>
+        <div class="relative h-48 flex items-center justify-center my-6">
+          <img src="${p.imageUrl || 'https://via.placeholder.com/300x300?text=PC'}"
+            alt="${p.name}" class="max-h-full max-w-full object-contain"
+            onerror="this.src='https://via.placeholder.com/300x300?text=PC'">
+        </div>
+        <div class="text-left mt-4">
+          <div class="text-gray-500 text-[11px] mb-0.5">starts</div>
+          <div class="text-white font-bold text-[19px]">₹${p.price.toLocaleString()}</div>
         </div>
       </div>
     `;

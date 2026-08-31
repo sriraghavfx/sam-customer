@@ -9,7 +9,7 @@ function runSeed() {
         id: 1,
         role: "admin",
         name: "Raghav (Shop Owner)",
-        email: "owner@shop.com",
+        email: "sriraghav11906@gmail.com",
         phone: "+91 98765 43210",
         passwordHash: db.hashPassword("admin123"),
         createdAt: "2026-01-01T10:00:00Z"
